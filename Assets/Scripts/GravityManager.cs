@@ -1,25 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GravityManager
 {
-
     private static GravityManager _instance;
-
-    public static GravityManager GeTInstance()
-    {
-         _instance ??=  new GravityManager();
-        return _instance;
-    }
 
 
     private Orientation _current = Orientation.Down;
+
+    public static GravityManager GeTInstance()
+    {
+        _instance ??= new GravityManager();
+        return _instance;
+    }
 
     public Orientation GETCurrentOrientation()
     {
         return _current;
     }
+
     public void ChangeGravity(Orientation newOrientation)
     {
         if (_current == newOrientation) return;
@@ -38,7 +36,8 @@ public class GravityManager
 
 public enum Orientation
 {
-    Up,Left,Down,Right
-    
-    
-};
+    Up,
+    Left,
+    Down,
+    Right
+}

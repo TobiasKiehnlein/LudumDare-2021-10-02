@@ -1,36 +1,33 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
-    private Rigidbody2D _rg;
     public GameObject player;
-    private readonly float _turnSpeed = 5f;
-    private float _movingSpeed = 5.0f;
-    private readonly float _jumpForce = 400.0f;
-    private float _jumpLock = 0;
-    private bool _jumpAllowed = false;
-    Vector2 _vel = new Vector2(0, 0);
     public bool isGrounded = true;
-
-    float _horizontalSpeed;
-
-    private bool _isUnAligned = true;
+    private readonly float _jumpForce = 400.0f;
+    private readonly float _turnSpeed = 5f;
 
 
     private Orientation _currentOrientation;
+
+    private float _horizontalSpeed;
+
+    private bool _isUnAligned = true;
+    private bool _jumpAllowed;
+    private float _jumpLock;
+    private readonly float _movingSpeed = 5.0f;
     private Orientation _oldOrientation;
+    private Rigidbody2D _rg;
+    private Vector2 _vel = new Vector2(0, 0);
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         _rg = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         _rg.gravityScale = 1;
         _currentOrientation = GravityManager.GeTInstance().GETCurrentOrientation();
@@ -54,31 +51,41 @@ public class CharacterController : MonoBehaviour
             _jumpAllowed = true;
         }
 
-        float horizontalInput = Input.GetAxis("Horizontal");
-        int heightInput = (int) Input.GetAxis("Jump");
+        var horizontalInput = Input.GetAxis("Horizontal");
+        var heightInput = (int) Input.GetAxis("Jump");
         if (!isGrounded)
         {
             // verticalSpeed += fallingAcceleration * Time.deltaTime;
-            _horizontalSpeed = horizontalInput * 0.33f * _movingSpeed;
-
+            _horizontalSpeed = horizontalInput * 5f * _movingSpeed;
+            var force = Vector2.zero;
 
             switch (_currentOrientation)
             {
                 case Orientation.Up:
-                    _vel = new Vector2(-_horizontalSpeed, _rg.velocity.y);
+                    force = -Vector2.right;
                     break;
                 case Orientation.Down:
-                    _vel = new Vector2(_horizontalSpeed, _rg.velocity.y);
+                    force = -Vector2.left;
                     break;
                 case Orientation.Left:
-                    _vel = new Vector2(_rg.velocity.x, _horizontalSpeed);
+                    force = Vector2.up;
                     break;
                 case Orientation.Right:
-                    _vel = new Vector2(_rg.velocity.x, -_horizontalSpeed);
+                    force = Vector2.down;
                     break;
-
-                default: break;
             }
+
+            if (_currentOrientation == Orientation.Down || _currentOrientation == Orientation.Up)
+            {
+                if (Mathf.Abs(_rg.velocity.x) > 5) _horizontalSpeed = 0;
+            }
+            else
+            {
+                if (Mathf.Abs(_rg.velocity.y) > 5) _horizontalSpeed = 0;
+            }
+
+            force *= _horizontalSpeed;
+            _rg.AddForce(force);
         }
         else
         {
@@ -93,16 +100,14 @@ public class CharacterController : MonoBehaviour
                         _rg.AddForce(new Vector2(0, -(_jumpForce * _rg.mass)));
                         break;
                     case Orientation.Down:
-                        _rg.AddForce(new Vector2(0, (_jumpForce * _rg.mass)));
+                        _rg.AddForce(new Vector2(0, _jumpForce * _rg.mass));
                         break;
                     case Orientation.Left:
-                        _rg.AddForce(new Vector2((_jumpForce * _rg.mass), 0));
+                        _rg.AddForce(new Vector2(_jumpForce * _rg.mass, 0));
                         break;
                     case Orientation.Right:
                         _rg.AddForce(new Vector2(-(_jumpForce * _rg.mass), 0));
                         break;
-
-                    default: break;
                 }
 
 
@@ -124,23 +129,25 @@ public class CharacterController : MonoBehaviour
                 case Orientation.Right:
                     _vel = new Vector2(_rg.velocity.x, -_horizontalSpeed);
                     break;
-
-                default: break;
             }
+
+            _rg.velocity = _vel;
         }
 
-        _rg.velocity = _vel;
-        if (_isUnAligned)
-        {
-            AlignPlayer();
-        }
+
+        if (_isUnAligned) AlignPlayer();
 
         isGrounded = false;
     }
 
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("Collidable")) isGrounded = true;
+    }
+
     private static float Abs(float input)
     {
-        return ((input < 0f) ? -input : input);
+        return input < 0f ? -input : input;
     }
 
     public void UpdatePlayerGravity(Orientation newOrientation)
@@ -167,15 +174,9 @@ public class CharacterController : MonoBehaviour
             case Orientation.Right:
                 targetAngle = 270;
                 break;
-            default: break;
         }
 
-        this.transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, targetAngle),
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, targetAngle),
             _turnSpeed * Time.deltaTime);
-    }
-    
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.CompareTag("Collidable")) isGrounded = true;
     }
 }
