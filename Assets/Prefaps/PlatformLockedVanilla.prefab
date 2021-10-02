@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 6473409952340915026}
   m_Layer: 0
   m_Name: PlatformLockedVanilla
-  m_TagString: Untagged
+  m_TagString: Collidable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

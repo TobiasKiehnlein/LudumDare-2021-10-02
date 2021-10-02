@@ -1,14 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
- 
+
 public class CharacterController : MonoBehaviour
 {
-    
     private Rigidbody2D _rg;
     public GameObject player;
-    private readonly float  _turnSpeed = 5f;
-     private float _movingSpeed = 5.0f;
+    private readonly float _turnSpeed = 5f;
+    private float _movingSpeed = 5.0f;
     private readonly float _jumpForce = 400.0f;
     private float _jumpLock = 0;
     private bool _jumpAllowed = false;
@@ -18,9 +18,8 @@ public class CharacterController : MonoBehaviour
     float _horizontalSpeed;
 
     private bool _isUnAligned = true;
-    
-    
-    
+
+
     private Orientation _currentOrientation;
     private Orientation _oldOrientation;
 
@@ -34,19 +33,19 @@ public class CharacterController : MonoBehaviour
     void Update()
     {
         _rg.gravityScale = 1;
-        _currentOrientation = GravityManager.GeTInstance().GETCurrentOrientation(); 
-        switch (_currentOrientation)
-        {
-            case Orientation.Up:
-            case Orientation.Down:
-                isGrounded = (Abs(_rg.velocity.y) < 0.05f);
-                break;
-            case Orientation.Left:
-            case Orientation.Right:
-                isGrounded = (Abs(_rg.velocity.x) < 0.05f);
-                break;
-            default: break;
-        }
+        _currentOrientation = GravityManager.GeTInstance().GETCurrentOrientation();
+/*   switch (_currentOrientation)
+ {
+      case Orientation.Up:
+      case Orientation.Down:
+          isGrounded = (Abs(_rg.velocity.y) < 0.05f);
+          break;
+      case Orientation.Left:
+      case Orientation.Right:
+          isGrounded = (Abs(_rg.velocity.x) < 0.05f);
+          break;
+      default: break;
+  }*/
 
         _jumpLock -= Time.deltaTime;
         if (_jumpLock < 0)
@@ -131,8 +130,12 @@ public class CharacterController : MonoBehaviour
         }
 
         _rg.velocity = _vel;
-        if(_isUnAligned)
-        {AlignPlayer();}
+        if (_isUnAligned)
+        {
+            AlignPlayer();
+        }
+
+        isGrounded = false;
     }
 
     private static float Abs(float input)
@@ -142,10 +145,6 @@ public class CharacterController : MonoBehaviour
 
     public void UpdatePlayerGravity(Orientation newOrientation)
     {
-
-
-
-
         _isUnAligned = true;
         _oldOrientation = _currentOrientation;
         _currentOrientation = newOrientation;
@@ -170,7 +169,13 @@ public class CharacterController : MonoBehaviour
                 break;
             default: break;
         }
-        this.transform.rotation = Quaternion.Slerp(transform.rotation,Quaternion.Euler(0,0,targetAngle),_turnSpeed*Time.deltaTime );
-    }
 
+        this.transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, targetAngle),
+            _turnSpeed * Time.deltaTime);
+    }
+    
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("Collidable")) isGrounded = true;
+    }
 }
