@@ -1,0 +1,27 @@
+# Written by MakeHuman 1.2.0 final
+version v1.2.0
+uuid 4272ca6c-e3e2-44cd-928c-bbc827c249e1
+name Astronaut
+camera 10.5 15.0 0.4703675227074943 0.18938053671600133 1.0 1.225
+modifier head/head-oval 0.222000
+modifier head/head-rectangular 0.365000
+modifier torso/torso-muscle-dorsi-decr|incr 0.254000
+modifier torso/torso-muscle-pectoral-decr|incr 0.254000
+modifier armslegs/r-hand-fingers-distance-decr|incr 0.048000
+modifier breast/BreastSize 0.452000
+modifier breast/BreastFirmness 0.500000
+modifier macrodetails/Gender 1.000000
+modifier macrodetails/Age 0.627000
+modifier macrodetails/African 0.331132
+modifier macrodetails/Asian 0.325000
+modifier macrodetails/Caucasian 0.343868
+modifier macrodetails-universal/Muscle 0.500000
+modifier macrodetails-universal/Weight 0.651000
+modifier macrodetails-height/Height 0.532000
+modifier macrodetails-proportions/BodyProportions 0.675000
+skeleton game_engine.mhskel
+eyes HighPolyEyes 2c12f43b-1303-432c-b7ce-d78346baf2e6
+clothesHideFaces True
+skinMaterial skins/young_caucasian_male/young_caucasian_male2.mhmat
+material HighPolyEyes 2c12f43b-1303-432c-b7ce-d78346baf2e6 eyes/materials/brown.mhmat
+subdivide False
