@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f55192ad87d40e9aa2d349cd53d99f5, type: 3}
+  m_Name: DefaultGameTiles
+  m_EditorClassIdentifier: 
+  tiles:
+  - TileName: X
+    Type: 2
+    Prefab: {fileID: 919132149155446097, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}
+    CanFaceUp: 1
+    CanFaceRight: 1
+    CanFaceDown: 1
+    CanFaceLeft: 1
+  - TileName: T
+    Type: 1
+    Prefab: {fileID: 919132149155446097, guid: 09f43b12a2cc78d428eca4652bc83ee6, type: 3}
+    CanFaceUp: 1
+    CanFaceRight: 1
+    CanFaceDown: 1
+    CanFaceLeft: 1
+  - TileName: I
+    Type: 0
+    Prefab: {fileID: 919132149155446097, guid: 5404aa1e3df8b114db9370fd45c0e951, type: 3}
+    CanFaceUp: 1
+    CanFaceRight: 1
+    CanFaceDown: 1
+    CanFaceLeft: 1
+  - TileName: L
+    Type: 4
+    Prefab: {fileID: 919132149155446097, guid: 6d12383b4eea9d14bafc25d57b454553, type: 3}
+    CanFaceUp: 1
+    CanFaceRight: 1
+    CanFaceDown: 1
+    CanFaceLeft: 1
+  - TileName: D
+    Type: 3
+    Prefab: {fileID: 919132149155446097, guid: 2399240cc5308ab4794e052a7169a535, type: 3}
+    CanFaceUp: 1
+    CanFaceRight: 1
+    CanFaceDown: 1
+    CanFaceLeft: 1
