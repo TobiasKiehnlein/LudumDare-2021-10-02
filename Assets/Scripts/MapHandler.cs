@@ -21,7 +21,6 @@ public class MapHandler : MonoBehaviour
         _map = new string[mapSettings.radius * 2 - 1, mapSettings.radius * 2 - 1];
         _rotations = new Rot[mapSettings.radius * 2 - 1, mapSettings.radius * 2 - 1];
         var maze = new Maze(mapSettings.radius);
-        maze.Display();
         var rand = new Random();
         for (var i = 0; i < mapSettings.radius * 2 - 1; i++)
         for (var j = 0; j < mapSettings.radius * 2 - 1; j++)
@@ -30,12 +29,14 @@ public class MapHandler : MonoBehaviour
                 new Vector2 {x = mapSettings.radius - 1, y = mapSettings.radius - 1});
             if (!(distanceToCenter < mapSettings.radius)) continue;
 
-            _map[i, j] = _tiles.Keys.ToArray()[rand.Next(0, _tiles.Count)];
-            var currentTileInfo = maze.GetTileInfo(i, j);
-            Tile tile;
-            try
-            {
-                tile = mapTiles.tiles.First(x => x.Type == currentTileInfo.Item1);
+                _map[i, j] = _tiles.Keys.ToArray()[rand.Next(0, _tiles.Count)];
+                var (tileType, rotation) = maze.GetTileInfo(i, j);
+                var tile = mapTiles.tiles.Where(x => x.Type == tileType).Shuffle(rand).First();
+
+                var go = Instantiate(tile.Prefab, transform);
+                go.transform.localPosition = new Vector3 {x = i * mapSettings.tileSize, y = j * mapSettings.tileSize};
+                go.transform.Rotate(Vector3.left, -90);
+                go.transform.Rotate(Vector3.up, (int) rotation);
             }
             catch (Exception e)
             {
@@ -49,11 +50,7 @@ public class MapHandler : MonoBehaviour
             go.transform.Rotate(Vector3.up, (int) currentTileInfo.Item2);
         }
 
-        transform.Translate(-(mapSettings.radius - 1) * mapSettings.tileSize,
-            -(mapSettings.radius - 1) * mapSettings.tileSize, 0);
-
-
-        Utils.Utils.Print2DArray(_map);
+        transform.Translate(-(mapSettings.radius - 1) * mapSettings.tileSize, -(mapSettings.radius - 1) * mapSettings.tileSize, 0);
     }
 }
 

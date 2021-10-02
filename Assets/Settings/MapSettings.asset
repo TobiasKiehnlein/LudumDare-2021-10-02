@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d1c4f9af912444aa4fe5471e4c62856, type: 3}
   m_Name: MapSettings
   m_EditorClassIdentifier: 
-  radius: 8
+  radius: 6
   tileSize: 45
