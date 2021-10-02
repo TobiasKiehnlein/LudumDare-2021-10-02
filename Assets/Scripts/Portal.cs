@@ -1,10 +1,10 @@
-using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Portal : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Portal reciever;
+    public Portal receiver;
     private bool _dormant;
     private float _sleeper;
 
@@ -25,7 +25,7 @@ public class Portal : MonoBehaviour
         
      //   Debug.Log(this.gameObject.transform.forward);
         _sleeper -= Time.deltaTime;
-        if (!(_sleeper < 0)) return;
+        if (_sleeper >= 0) return;
         _sleeper = 0;
         _dormant = false;
         
@@ -45,9 +45,8 @@ public class Portal : MonoBehaviour
 
     private void TeleportPlayer(GameObject player)
     {
-        var euler1 = reciever.gameObject.transform.rotation.z;
-        var euler2 = this.gameObject.transform.rotation.z;
-
+        var euler1 = receiver.gameObject.transform.rotation.eulerAngles.z;
+        var euler2 = this.gameObject.transform.rotation.eulerAngles.z;
 
         var theta = euler1 - euler2;
 
@@ -57,14 +56,9 @@ public class Portal : MonoBehaviour
 
         velocity = quaternion * velocity;
         player.GetComponent<Rigidbody2D>().velocity = -velocity;
-        var transform1 = reciever.transform;
+        var transform1 = receiver.transform;
         player.transform.position = transform1.position + .5f * transform1.up;
-
-
-
-
-
-
+        receiver.Sleep();
     }
 /*
     private Vector2 rotateVector2(Vector2 vec, float angle)

@@ -1,18 +1,22 @@
 using System;
+using Enums;
+using ScriptableObjects;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CharacterController : MonoBehaviour
 {
     public GameObject player;
     public bool isGrounded = true;
-    private readonly float _jumpForce = 400.0f;
-    private readonly float _movingSpeed = 5.0f;
-    private readonly float _turnSpeed = 5f;
+    [SerializeField] private float jumpForce = 400.0f;
+    [SerializeField] private float movingAcceleration = 5.0f;
+    [SerializeField] private float turnSpeed = 5f;
+    [SerializeField] private GameSettings gameSettings;
 
     // public GravityManager gravity;
     private Orientation _currentOrientation = Orientation.Down;
 
-    private float _horizontalSpeed;
+    private float _horizontalForce;
 
     private bool _isUnAligned = true;
     private bool _jumpAllowed;
@@ -30,26 +34,26 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        _rg.gravityScale = 1;
-        // _currentOrientation = gravity.GETCurrentOrientation();
-        _currentOrientation = Orientation.Down;
-        var grav = _currentOrientation switch
-        {
-            Orientation.Up => Vector2.up,
-            Orientation.Down => Vector2.down,
-            Orientation.Left => Vector2.left,
-            Orientation.Right => Vector2.right,
-            _ => Vector2.zero
-        };
-        grav *= 5;
-
-        Physics2D.gravity = grav;
-        this.gameObject.transform.rotation = _currentOrientation switch
+        // _rg.gravityScale = 1;
+        // // _currentOrientation = gravity.GETCurrentOrientation();
+        // _currentOrientation = Orientation.Down;
+        // var grav = _currentOrientation switch
+        // {
+        //     Orientation.Up => Vector2.up,
+        //     Orientation.Down => Vector2.down,
+        //     Orientation.Left => Vector2.left,
+        //     Orientation.Right => Vector2.right,
+        //     _ => Vector2.zero
+        // };
+        // grav *= 5;
+        //
+        // Physics2D.gravity = grav;
+        this.gameObject.transform.rotation = gameSettings.GravityOrientation switch
         {
             Orientation.Down => Quaternion.Euler(0, 0, 0),
             Orientation.Up => Quaternion.Euler(0, 0, 180f),
-            Orientation.Left => Quaternion.Euler(0, 0, 90f),
-            Orientation.Right => Quaternion.Euler(0, 0, 270f),
+            Orientation.Left => Quaternion.Euler(0, 0, 270f),
+            Orientation.Right => Quaternion.Euler(0, 0, 90f),
             _ => this.gameObject.transform.rotation
         };
 /*   switch (_currentOrientation)
@@ -77,9 +81,9 @@ public class CharacterController : MonoBehaviour
         if (!isGrounded)
         {
             // verticalSpeed += fallingAcceleration * Time.deltaTime;
-            _horizontalSpeed = horizontalInput * 5f * _movingSpeed;
+            _horizontalForce = horizontalInput * 5f * movingAcceleration;
 
-            var force = _currentOrientation switch
+            var horizontalMovementDirection = _currentOrientation switch
             {
                 Orientation.Up => Vector2.left,
                 Orientation.Down => Vector2.right,
@@ -88,21 +92,23 @@ public class CharacterController : MonoBehaviour
                 _ => Vector2.zero
             };
 
+            var currentVelocity = _rg.velocity;
+
             if (_currentOrientation == Orientation.Down || _currentOrientation == Orientation.Up)
             {
-                if (Mathf.Abs(_rg.velocity.x) > 5) _horizontalSpeed = 0;
+                if (Mathf.Abs(_rg.velocity.x) > 5 && currentVelocity.x * _horizontalForce > 0) _horizontalForce = 0;
             }
             else
             {
-                if (Mathf.Abs(_rg.velocity.y) > 5) _horizontalSpeed = 0;
+                if (Mathf.Abs(_rg.velocity.y) > 5 && currentVelocity.y * _horizontalForce > 0) _horizontalForce = 0;
             }
 
-            force *= _horizontalSpeed;
-            _rg.AddForce(force);
+            horizontalMovementDirection *= _horizontalForce;
+            _rg.AddForce(horizontalMovementDirection);
         }
         else
         {
-            _horizontalSpeed = horizontalInput * _movingSpeed;
+            _horizontalForce = horizontalInput * movingAcceleration;
 
 
             if (_jumpAllowed && heightInput == 1)
@@ -110,16 +116,16 @@ public class CharacterController : MonoBehaviour
                 switch (_currentOrientation)
                 {
                     case Orientation.Up:
-                        _rg.AddForce(new Vector2(0, -(_jumpForce * _rg.mass)));
+                        _rg.AddForce(new Vector2(0, -(jumpForce * _rg.mass)));
                         break;
                     case Orientation.Down:
-                        _rg.AddForce(new Vector2(0, _jumpForce * _rg.mass));
+                        _rg.AddForce(new Vector2(0, jumpForce * _rg.mass));
                         break;
                     case Orientation.Left:
-                        _rg.AddForce(new Vector2(_jumpForce * _rg.mass, 0));
+                        _rg.AddForce(new Vector2(jumpForce * _rg.mass, 0));
                         break;
                     case Orientation.Right:
-                        _rg.AddForce(new Vector2(-(_jumpForce * _rg.mass), 0));
+                        _rg.AddForce(new Vector2(-(jumpForce * _rg.mass), 0));
                         break;
                 }
 
@@ -131,16 +137,16 @@ public class CharacterController : MonoBehaviour
             switch (_currentOrientation)
             {
                 case Orientation.Up:
-                    _vel = new Vector2(-_horizontalSpeed, _rg.velocity.y);
+                    _vel = new Vector2(-_horizontalForce, _rg.velocity.y);
                     break;
                 case Orientation.Down:
-                    _vel = new Vector2(_horizontalSpeed, _rg.velocity.y);
+                    _vel = new Vector2(_horizontalForce, _rg.velocity.y);
                     break;
                 case Orientation.Left:
-                    _vel = new Vector2(_rg.velocity.x, _horizontalSpeed);
+                    _vel = new Vector2(_rg.velocity.x, _horizontalForce);
                     break;
                 case Orientation.Right:
-                    _vel = new Vector2(_rg.velocity.x, -_horizontalSpeed);
+                    _vel = new Vector2(_rg.velocity.x, -_horizontalForce);
                     break;
             }
 
@@ -148,7 +154,7 @@ public class CharacterController : MonoBehaviour
         }
 
 
-      //  if (_isUnAligned) AlignPlayer();
+        //  if (_isUnAligned) AlignPlayer();
 
         isGrounded = false;
     }
@@ -201,6 +207,6 @@ public class CharacterController : MonoBehaviour
         }
 
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, targetAngle),
-            _turnSpeed * Time.deltaTime);
+            turnSpeed * Time.deltaTime);
     }
 }
