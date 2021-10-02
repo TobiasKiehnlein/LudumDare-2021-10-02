@@ -9,7 +9,7 @@ public class CharacterController : MonoBehaviour
     private readonly float _movingSpeed = 5.0f;
     private readonly float _turnSpeed = 5f;
 
-    public GravityManager gravity;
+    // public GravityManager gravity;
     private Orientation _currentOrientation;
 
     private float _horizontalSpeed;
@@ -31,7 +31,8 @@ public class CharacterController : MonoBehaviour
     private void Update()
     {
         _rg.gravityScale = 1;
-        _currentOrientation = gravity.GETCurrentOrientation();
+        // _currentOrientation = gravity.GETCurrentOrientation();
+        _currentOrientation = Orientation.Down;
         var grav = _currentOrientation switch
         {
             Orientation.Up => -Vector2.right,

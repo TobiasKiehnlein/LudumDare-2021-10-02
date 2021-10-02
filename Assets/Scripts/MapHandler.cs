@@ -28,7 +28,8 @@ public class MapHandler : MonoBehaviour
             var distanceToCenter = Vector2.Distance(new Vector2 {x = j, y = i},
                 new Vector2 {x = mapSettings.radius - 1, y = mapSettings.radius - 1});
             if (!(distanceToCenter < mapSettings.radius)) continue;
-
+            try
+            {
                 _map[i, j] = _tiles.Keys.ToArray()[rand.Next(0, _tiles.Count)];
                 var (tileType, rotation) = maze.GetTileInfo(i, j);
                 var tile = mapTiles.tiles.Where(x => x.Type == tileType).Shuffle(rand).First();
@@ -43,11 +44,6 @@ public class MapHandler : MonoBehaviour
                 Console.WriteLine(e);
                 throw;
             }
-
-            var go = Instantiate(tile.Prefab, transform);
-            go.transform.localPosition = new Vector3 {x = i * mapSettings.tileSize, y = j * mapSettings.tileSize};
-            go.transform.Rotate(Vector3.left, -90);
-            go.transform.Rotate(Vector3.up, (int) currentTileInfo.Item2);
         }
 
         transform.Translate(-(mapSettings.radius - 1) * mapSettings.tileSize, -(mapSettings.radius - 1) * mapSettings.tileSize, 0);
