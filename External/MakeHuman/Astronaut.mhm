@@ -2,7 +2,7 @@
 version v1.2.0
 uuid 4272ca6c-e3e2-44cd-928c-bbc827c249e1
 name Astronaut
-camera 10.5 15.0 0.4703675227074943 0.18938053671600133 1.0 1.225
+camera 3.0 1.5 0.3604776480088557 -0.05456872779029452 -0.3487324841488159 1.0625
 modifier head/head-oval 0.222000
 modifier head/head-rectangular 0.365000
 modifier torso/torso-muscle-dorsi-decr|incr 0.254000
@@ -21,6 +21,8 @@ modifier macrodetails-height/Height 0.532000
 modifier macrodetails-proportions/BodyProportions 0.675000
 skeleton game_engine.mhskel
 eyes HighPolyEyes 2c12f43b-1303-432c-b7ce-d78346baf2e6
+clothes SpaceSuit 4239c605-88f5-4c13-96fc-5a7d65b7161a
+clothes SpaceSuitVisor b1ce5089-70f2-4da3-84e8-c48e821cd1b3
 clothesHideFaces True
 skinMaterial skins/young_caucasian_male/young_caucasian_male2.mhmat
 material HighPolyEyes 2c12f43b-1303-432c-b7ce-d78346baf2e6 eyes/materials/brown.mhmat
