@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour
@@ -42,22 +43,14 @@ public class CharacterController : MonoBehaviour
         grav *= 5;
 
         Physics2D.gravity = grav;
-        switch (_currentOrientation)
+        this.gameObject.transform.rotation = _currentOrientation switch
         {
-            case Orientation.Down :
-                this.gameObject.transform.rotation = Quaternion.identity;
-                break;
-            case  Orientation.Up :
-                this.gameObject.transform.rotation = Quaternion.Euler(0, 0, 180f);
-                break;
-            case  Orientation.Left :
-                this.gameObject.transform.rotation = Quaternion.Euler(0, 0, 90f);
-                break;
-            case  Orientation.Right :
-                this.gameObject.transform.rotation = Quaternion.Euler(0, 0, 270f);
-                break;
-            
-        }
+            Orientation.Down => Quaternion.Euler(0, 0, 0),
+            Orientation.Up => Quaternion.Euler(0, 0, 180f),
+            Orientation.Left => Quaternion.Euler(0, 0, 90f),
+            Orientation.Right => Quaternion.Euler(0, 0, 270f),
+            _ => this.gameObject.transform.rotation
+        };
 /*   switch (_currentOrientation)
  {
       case Orientation.Up:
@@ -87,10 +80,10 @@ public class CharacterController : MonoBehaviour
 
             var force = _currentOrientation switch
             {
-                Orientation.Up => -Vector2.right,
-                Orientation.Down => -Vector2.left,
-                Orientation.Left => Vector2.up,
-                Orientation.Right => Vector2.down,
+                Orientation.Up => -Vector2.up,
+                Orientation.Down => -Vector2.down,
+                Orientation.Left => Vector2.left,
+                Orientation.Right => Vector2.right,
                 _ => Vector2.zero
             };
 
@@ -154,7 +147,7 @@ public class CharacterController : MonoBehaviour
         }
 
 
-        if (_isUnAligned) AlignPlayer();
+      //  if (_isUnAligned) AlignPlayer();
 
         isGrounded = false;
     }
