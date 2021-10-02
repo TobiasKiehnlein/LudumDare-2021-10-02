@@ -6,8 +6,8 @@ namespace ScriptableObjects
     public class MapSettings : ScriptableObject
     {
         // amount of tiles that will be placed next to each other
-        [Range(2,25)]
-        public int radius = 10;
+        [Range(2, 25)] public int radius = 10;
+
         public float tileSize = 45;
     }
 }

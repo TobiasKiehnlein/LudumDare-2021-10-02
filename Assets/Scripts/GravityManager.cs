@@ -1,21 +1,31 @@
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GravityManager
+public class GravityManager :MonoBehaviour
 {
-    private static GravityManager _instance;
+ 
 
 
     private Orientation _current = Orientation.Down;
-
-    public static GravityManager GeTInstance()
-    {
-        _instance ??= new GravityManager();
-        return _instance;
-    }
+    public Slider debugslider;
+ 
 
     public Orientation GETCurrentOrientation()
     {
         return _current;
+    }
+
+    private void Update()
+    {
+        _current = debugslider.value switch
+        {
+            0 => Orientation.Up,
+            1 => Orientation.Left,
+            2 => Orientation.Down,
+            3 => Orientation.Right,
+            _ => Orientation.Down
+        };
     }
 
     public void ChangeGravity(Orientation newOrientation)

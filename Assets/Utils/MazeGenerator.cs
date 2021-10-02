@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Enums;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
 using Debug = System.Diagnostics.Debug;
 using Random = System.Random;
 
@@ -16,8 +15,8 @@ namespace Utils
 
         public Point(int x, int y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
     }
 
@@ -58,7 +57,7 @@ namespace Utils
         Bottom = 4,
         Left = 8,
         Visited = 128,
-        Initial = Top | Right | Bottom | Left,
+        Initial = Top | Right | Bottom | Left
     }
 
     public struct RemoveWallAction
@@ -70,19 +69,20 @@ namespace Utils
     public class Maze
     {
         private readonly CellState[,] _cells;
-        private readonly int _width;
         private readonly int _height;
         private readonly Random _rng;
+        private readonly int _width;
 
         public Maze(int radius)
         {
-            _width = radius*2-1;
-            _height = radius*2-1;
-            _cells = new CellState[radius*2-1, radius*2-1];
-            for (var x = 0; x < radius*2-1; x++)
-            for (var y = 0; y < radius*2-1; y++)
+            _width = radius * 2 - 1;
+            _height = radius * 2 - 1;
+            _cells = new CellState[radius * 2 - 1, radius * 2 - 1];
+            for (var x = 0; x < radius * 2 - 1; x++)
+            for (var y = 0; y < radius * 2 - 1; y++)
             {
-                var distanceToCenter = Vector2.Distance(new Vector2 {x = x, y = y}, new Vector2 {x = radius - 1, y = radius - 1});
+                var distanceToCenter = Vector2.Distance(new Vector2 {x = x, y = y},
+                    new Vector2 {x = radius - 1, y = radius - 1});
                 _cells[x, y] = distanceToCenter < radius ? CellState.Initial : CellState.Visited;
             }
 
@@ -100,14 +100,17 @@ namespace Utils
         {
             if (p.X > 0) yield return new RemoveWallAction {Neighbour = new Point(p.X - 1, p.Y), Wall = CellState.Left};
             if (p.Y > 0) yield return new RemoveWallAction {Neighbour = new Point(p.X, p.Y - 1), Wall = CellState.Top};
-            if (p.X < _width - 1) yield return new RemoveWallAction {Neighbour = new Point(p.X + 1, p.Y), Wall = CellState.Right};
-            if (p.Y < _height - 1) yield return new RemoveWallAction {Neighbour = new Point(p.X, p.Y + 1), Wall = CellState.Bottom};
+            if (p.X < _width - 1)
+                yield return new RemoveWallAction {Neighbour = new Point(p.X + 1, p.Y), Wall = CellState.Right};
+            if (p.Y < _height - 1)
+                yield return new RemoveWallAction {Neighbour = new Point(p.X, p.Y + 1), Wall = CellState.Bottom};
         }
 
         private void VisitCell(int x, int y)
         {
             this[x, y] |= CellState.Visited;
-            foreach (var p in GetNeighbours(new Point(x, y)).Shuffle(_rng).Where(z => !(this[z.Neighbour.X, z.Neighbour.Y].HasFlag(CellState.Visited))))
+            foreach (var p in GetNeighbours(new Point(x, y)).Shuffle(_rng)
+                .Where(z => !this[z.Neighbour.X, z.Neighbour.Y].HasFlag(CellState.Visited)))
             {
                 this[x, y] -= p.Wall;
                 this[p.Neighbour.X, p.Neighbour.Y] -= p.Wall.OppositeWall();
@@ -154,15 +157,10 @@ namespace Utils
                 {
                     var rotation = Rot.Top;
                     if (isTop)
-                    {
                         rotation = Rot.Bottom;
-                    } else if (isLeft)
-                    {
+                    else if (isLeft)
                         rotation = Rot.Right;
-                    } else if (isRight)
-                    {
-                        rotation = Rot.Left;
-                    }
+                    else if (isRight) rotation = Rot.Left;
 
                     return (TileType.TJunction, rotation);
                 }
@@ -173,41 +171,27 @@ namespace Utils
                     {
                         tileType = TileType.Straight;
                         if (isLeft && isRight)
-                        {
-                            rot = Rot.Left;//todo random left right
-                        }
+                            rot = Rot.Left; //todo random left right
                         else
-                        {
-                            rot = Rot.Top;//Todo random top bottom
-                        }
+                            rot = Rot.Top; //Todo random top bottom
                     }
                     else
                     {
                         if (isLeft)
-                        {
                             rot = isTop ? Rot.Right : Rot.Top;
-                        } else if (isRight)
-                        {
-                            rot = isTop ? Rot.Bottom : Rot.Left;
-                        }
+                        else if (isRight) rot = isTop ? Rot.Bottom : Rot.Left;
                     }
 
                     return (tileType, rot);
                 case 3:
                     if (!isLeft)
-                    {
                         rot = Rot.Bottom;
-                    } else if (!isTop)
-                    {
+                    else if (!isTop)
                         rot = Rot.Left;
-                    } else if (!isRight)
-                    {
+                    else if (!isRight)
                         rot = Rot.Top;
-                    }
                     else
-                    {
                         rot = Rot.Right;
-                    }
 
                     return (TileType.DeadEnd, rot);
                 default:

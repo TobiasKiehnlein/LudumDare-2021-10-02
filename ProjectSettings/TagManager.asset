@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Collidable
   - Portal
+  - Hole
   layers:
   - Default
   - TransparentFX

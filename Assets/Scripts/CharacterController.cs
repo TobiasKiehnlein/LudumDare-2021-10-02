@@ -5,9 +5,10 @@ public class CharacterController : MonoBehaviour
     public GameObject player;
     public bool isGrounded = true;
     private readonly float _jumpForce = 400.0f;
+    private readonly float _movingSpeed = 5.0f;
     private readonly float _turnSpeed = 5f;
 
-
+    public GravityManager gravity;
     private Orientation _currentOrientation;
 
     private float _horizontalSpeed;
@@ -15,7 +16,6 @@ public class CharacterController : MonoBehaviour
     private bool _isUnAligned = true;
     private bool _jumpAllowed;
     private float _jumpLock;
-    private readonly float _movingSpeed = 5.0f;
     private Orientation _oldOrientation;
     private Rigidbody2D _rg;
     private Vector2 _vel = new Vector2(0, 0);
@@ -30,7 +30,34 @@ public class CharacterController : MonoBehaviour
     private void Update()
     {
         _rg.gravityScale = 1;
-        _currentOrientation = GravityManager.GeTInstance().GETCurrentOrientation();
+        _currentOrientation = gravity.GETCurrentOrientation();
+        var grav = _currentOrientation switch
+        {
+            Orientation.Up => -Vector2.right,
+            Orientation.Down => -Vector2.left,
+            Orientation.Left => Vector2.up,
+            Orientation.Right => Vector2.down,
+            _ => Vector2.zero
+        };
+        grav *= 5;
+
+        Physics2D.gravity = grav;
+        switch (_currentOrientation)
+        {
+            case Orientation.Down :
+                this.gameObject.transform.rotation = Quaternion.identity;
+                break;
+            case  Orientation.Up :
+                this.gameObject.transform.rotation = Quaternion.Euler(0, 0, 180f);
+                break;
+            case  Orientation.Left :
+                this.gameObject.transform.rotation = Quaternion.Euler(0, 0, 90f);
+                break;
+            case  Orientation.Right :
+                this.gameObject.transform.rotation = Quaternion.Euler(0, 0, 270f);
+                break;
+            
+        }
 /*   switch (_currentOrientation)
  {
       case Orientation.Up:
@@ -57,23 +84,15 @@ public class CharacterController : MonoBehaviour
         {
             // verticalSpeed += fallingAcceleration * Time.deltaTime;
             _horizontalSpeed = horizontalInput * 5f * _movingSpeed;
-            var force = Vector2.zero;
 
-            switch (_currentOrientation)
+            var force = _currentOrientation switch
             {
-                case Orientation.Up:
-                    force = -Vector2.right;
-                    break;
-                case Orientation.Down:
-                    force = -Vector2.left;
-                    break;
-                case Orientation.Left:
-                    force = Vector2.up;
-                    break;
-                case Orientation.Right:
-                    force = Vector2.down;
-                    break;
-            }
+                Orientation.Up => -Vector2.right,
+                Orientation.Down => -Vector2.left,
+                Orientation.Left => Vector2.up,
+                Orientation.Right => Vector2.down,
+                _ => Vector2.zero
+            };
 
             if (_currentOrientation == Orientation.Down || _currentOrientation == Orientation.Up)
             {
@@ -140,9 +159,20 @@ public class CharacterController : MonoBehaviour
         isGrounded = false;
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Hole")) Ejection();
+    }
+
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("Collidable")) isGrounded = true;
+    }
+
+    private void Ejection()
+    {
+        // a slightly more beautiful solution might be an option for Game över
+        Time.timeScale = 0;
     }
 
     private static float Abs(float input)
