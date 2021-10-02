@@ -81,10 +81,10 @@ public class CharacterController : MonoBehaviour
 
             var force = _currentOrientation switch
             {
-                Orientation.Up => -Vector2.up,
-                Orientation.Down => -Vector2.down,
-                Orientation.Left => Vector2.left,
-                Orientation.Right => Vector2.right,
+                Orientation.Up => Vector2.left,
+                Orientation.Down => Vector2.right,
+                Orientation.Left => Vector2.up,
+                Orientation.Right => Vector2.down,
                 _ => Vector2.zero
             };
 
