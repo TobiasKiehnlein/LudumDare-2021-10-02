@@ -23,24 +23,14 @@ public class GravityManager
     public void ChangeGravity(Orientation newOrientation)
     {
         if (_current == newOrientation) return;
-        switch (newOrientation)
+        Physics2D.gravity = newOrientation switch
         {
-            case Orientation.Down:
-                Physics2D.gravity = new Vector2(0, -9.8f);
-                break;
-            case Orientation.Up:
-                Physics2D.gravity = new Vector2(0, 9.8f);
-                break;
-            case Orientation.Left:
-                Physics2D.gravity = new Vector2(-9.8f, 0);
-                break;
-            case Orientation.Right:
-                Physics2D.gravity = new Vector2(9.8f, 0);
-                break;
-            default:
-                Physics2D.gravity = new Vector2(0, -9.8f);
-                break;
-        }
+            Orientation.Down => new Vector2(0, -9.8f),
+            Orientation.Up => new Vector2(0, 9.8f),
+            Orientation.Left => new Vector2(-9.8f, 0),
+            Orientation.Right => new Vector2(9.8f, 0),
+            _ => new Vector2(0, -9.8f)
+        };
 
         _current = newOrientation;
     }
