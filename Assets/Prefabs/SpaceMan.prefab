@@ -1,24 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!95 &4218665895594195866
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8613576227091523790}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: b1d58de9163902b45a7ca3513e45fb18, type: 3}
-  m_Controller: {fileID: 9100000, guid: ab95fb4e84638f642bc92bfd7dfd9b31, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4218665895801355248
 GameObject:
   m_ObjectHideFlags: 0
@@ -50,6 +31,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &4218665895594195866
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8613576227091523790}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: b1d58de9163902b45a7ca3513e45fb18, type: 3}
+  m_Controller: {fileID: 9100000, guid: ab95fb4e84638f642bc92bfd7dfd9b31, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &4218665894836208223
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -113,7 +113,8 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: b0a73d2e31ddee34faa7b16a02f6ef37, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5866666021909216657, guid: b1d58de9163902b45a7ca3513e45fb18, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b1d58de9163902b45a7ca3513e45fb18, type: 3}
 --- !u!4 &4395811456721479092 stripped
 Transform:
