@@ -2,7 +2,7 @@
 using Enums;
 using UnityEngine;
 using UnityEngine.Serialization;
-
+//#define GRAVITY_FLIP_OFF 
 namespace ScriptableObjects
 {
     [CreateAssetMenu(fileName = "GameSettings", menuName = "CustomGameSettings/GameSettings", order = 0)]
@@ -48,7 +48,9 @@ namespace ScriptableObjects
 
             set
             {
+                #if GRAVITY_FLIP_OFF
                 return;
+                #endif
                 gravityOrientation = value;
                 Physics2D.gravity = value switch
                 {

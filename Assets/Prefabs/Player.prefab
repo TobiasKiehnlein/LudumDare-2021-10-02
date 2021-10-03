@@ -267,13 +267,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpForce: 300
-  movingAcceleration: 3
-  runningAcceleration: 7
+  movingAcceleration: 30
+  runningAcceleration: 70
   airForceMultiplier: 5
+  maxDistanceToWallUntilBlocked: 1
   turnSpeed: 5
-  maxAirBoostSpeed: 5
+  scalingFactorSpeedInputStop: 15
   gameSettings: {fileID: 11400000, guid: e596dddb9563617498018f921e414040, type: 2}
   vMinTurn: 0
+  vMaxAcceleratableFloor: 9
+  vMaxAcceleratableAir: 5
   walkT: 0.2
   runT: 3.5
   fallT: 2
