@@ -51,9 +51,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3372522033569347474, guid: 09f43b12a2cc78d428eca4652bc83ee6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1817752537321972114, guid: 09f43b12a2cc78d428eca4652bc83ee6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 09f43b12a2cc78d428eca4652bc83ee6, type: 3}
       propertyPath: m_Name
-      value: T-Tube
+      value: T-Tube Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 09f43b12a2cc78d428eca4652bc83ee6, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09f43b12a2cc78d428eca4652bc83ee6, type: 3}
@@ -72,6 +84,10 @@ PrefabInstance:
     - target: {fileID: 273777956524809129, guid: b9277dadb5266454eab85ddbef3f9922, type: 3}
       propertyPath: m_Name
       value: TTubeCollider
+      objectReference: {fileID: 0}
+    - target: {fileID: 273777956524809129, guid: b9277dadb5266454eab85ddbef3f9922, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6115261665403882532, guid: b9277dadb5266454eab85ddbef3f9922, type: 3}
       propertyPath: m_RootOrder

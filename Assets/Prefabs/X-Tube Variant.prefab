@@ -7,6 +7,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6948112720398823826}
     m_Modifications:
+    - target: {fileID: 1253259070895302320, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1632892696288003125, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5513497071118180829, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -54,6 +62,18 @@ PrefabInstance:
     - target: {fileID: 5600590157689047856, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
       propertyPath: m_Name
       value: XTubeCollider
+      objectReference: {fileID: 0}
+    - target: {fileID: 5600590157689047856, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6238384486339745646, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6698599996014354128, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4568c4f29c3f2654d9254db70d0635e2, type: 3}
@@ -108,9 +128,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3372522033569347474, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1817752537321972114, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}
       propertyPath: m_Name
-      value: X-Tube
+      value: X-Tube Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}

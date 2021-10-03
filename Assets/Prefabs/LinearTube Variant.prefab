@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 'LinearTubeCollider '
       objectReference: {fileID: 0}
+    - target: {fileID: 1130756673461738850, guid: 8bc3e8c0de2f37a4e9992f38f4f260b0, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7411189368391572518, guid: 8bc3e8c0de2f37a4e9992f38f4f260b0, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -108,9 +112,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3372522033569347474, guid: 5404aa1e3df8b114db9370fd45c0e951, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1817752537321972114, guid: 5404aa1e3df8b114db9370fd45c0e951, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 5404aa1e3df8b114db9370fd45c0e951, type: 3}
       propertyPath: m_Name
       value: LinearTube Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5404aa1e3df8b114db9370fd45c0e951, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5404aa1e3df8b114db9370fd45c0e951, type: 3}

@@ -51,9 +51,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3372522033569347474, guid: 2399240cc5308ab4794e052a7169a535, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1817752537321972114, guid: 2399240cc5308ab4794e052a7169a535, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2399240cc5308ab4794e052a7169a535, type: 3}
       propertyPath: m_Name
-      value: DeadEnd
+      value: DeadEnd Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2399240cc5308ab4794e052a7169a535, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2399240cc5308ab4794e052a7169a535, type: 3}
@@ -72,6 +84,10 @@ PrefabInstance:
     - target: {fileID: 1969535324603906841, guid: b6014a1f208853247a1b37c2b7bde1d4, type: 3}
       propertyPath: m_Name
       value: DeadEndCollider
+      objectReference: {fileID: 0}
+    - target: {fileID: 1969535324603906841, guid: b6014a1f208853247a1b37c2b7bde1d4, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2657644613101280490, guid: b6014a1f208853247a1b37c2b7bde1d4, type: 3}
       propertyPath: m_RootOrder

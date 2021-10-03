@@ -51,9 +51,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3372522033569347474, guid: 6d12383b4eea9d14bafc25d57b454553, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1817752537321972114, guid: 6d12383b4eea9d14bafc25d57b454553, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6d12383b4eea9d14bafc25d57b454553, type: 3}
       propertyPath: m_Name
-      value: L-Tube
+      value: L-Tube Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6d12383b4eea9d14bafc25d57b454553, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d12383b4eea9d14bafc25d57b454553, type: 3}
@@ -69,9 +81,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 453796476184671772}
     m_Modifications:
+    - target: {fileID: 75971380375503190, guid: 49f87040298f9544f8ebd46d5ed48e4f, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 1571390122473629961, guid: 49f87040298f9544f8ebd46d5ed48e4f, type: 3}
       propertyPath: m_Name
       value: LTubeCollider
+      objectReference: {fileID: 0}
+    - target: {fileID: 1571390122473629961, guid: 49f87040298f9544f8ebd46d5ed48e4f, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6308650153081793527, guid: 49f87040298f9544f8ebd46d5ed48e4f, type: 3}
       propertyPath: m_RootOrder
@@ -116,6 +136,10 @@ PrefabInstance:
     - target: {fileID: 6308650153081793527, guid: 49f87040298f9544f8ebd46d5ed48e4f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6493767368788132911, guid: 49f87040298f9544f8ebd46d5ed48e4f, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49f87040298f9544f8ebd46d5ed48e4f, type: 3}
