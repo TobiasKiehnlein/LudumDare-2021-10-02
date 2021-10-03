@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859f716a7d354f909f1e87da1de4cfd9, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  gravityOrientation: 2
+  gravityOrientation: 3
   gravityStrength: 5
   gravityChangeInterval: 20
   gravityChangeRandomness: 5
