@@ -14,6 +14,16 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private GameSettings gameSettings;
 
     [SerializeField] private float vMinTurn;
+
+    // Animation values
+    [SerializeField] private float walkT = 0.2f;
+    [SerializeField] private float runT = 3f;
+    [SerializeField] private float fallT = 1f;
+    [SerializeField] private float freeFallT = 20f;
+
+    [SerializeField] private float landMiddleT = 2f;
+
+    [SerializeField] private float landHardT = 10f;
     // public GravityManager gravity;
 
 
@@ -24,17 +34,18 @@ public class CharacterController : MonoBehaviour
     private Rigidbody2D _rg;
     private Vector2 _vel = new Vector2(0, 0);
 
+    private SpaceManAnimator _animator;
+
     // Start is called before the first frame update
     private void Start()
     {
         _rg = GetComponent<Rigidbody2D>();
+        _animator = GetComponentInChildren<SpaceManAnimator>();
     }
 
     // Update is called once per frame
     private void Update()
     {
-       
-      
         _jumpLock -= Time.deltaTime;
         if (_jumpLock < 0)
         {
@@ -72,6 +83,21 @@ public class CharacterController : MonoBehaviour
 
             horizontalMovementDirection *= _horizontalForce;
             _rg.AddForce(horizontalMovementDirection);
+
+            float verticalVelocityAligned = GetVerticalVelocityAligned();
+            float absVerticalVelocityAligned = Mathf.Abs(verticalVelocityAligned);
+            if (absVerticalVelocityAligned < fallT)
+            {
+                _animator.Float();
+            }
+            else if (absVerticalVelocityAligned < freeFallT)
+            {
+                _animator.Fall();
+            }
+            else
+            {
+                _animator.FreeFall();
+            }
         }
         else
         {
@@ -99,6 +125,7 @@ public class CharacterController : MonoBehaviour
                         break;
                 }
 
+                _animator.Jump();
 
                 _jumpLock = 0.1f;
                 _jumpAllowed = false;
@@ -114,6 +141,21 @@ public class CharacterController : MonoBehaviour
             };
 
             _rg.velocity = _vel;
+
+            float horizontalVelocityAligned = GetHorizontalVelocityAligned();
+            float absHorizontalVelocityAligned = Mathf.Abs(horizontalVelocityAligned);
+            if (absHorizontalVelocityAligned < walkT)
+            {
+                _animator.Stand();
+            }
+            else if (absHorizontalVelocityAligned < runT)
+            {
+                _animator.Walk();
+            }
+            else
+            {
+                _animator.Run();
+            }
         }
 
 
@@ -122,9 +164,28 @@ public class CharacterController : MonoBehaviour
         isGrounded = false;
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        float verticalImpactVelocity = Mathf.Abs(Vector2.Dot(Physics2D.gravity.normalized, other.relativeVelocity));
+
+        if (verticalImpactVelocity < landMiddleT)
+        {
+            _animator.LandEasy();
+        }
+        else if (verticalImpactVelocity < landHardT)
+        {
+            _animator.LandMiddle();
+        }
+        else
+        {
+            _animator.LandHard();
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Hole")) Ejection();
+        if (other.CompareTag("Collidable")) isGrounded = true;
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -146,7 +207,7 @@ public class CharacterController : MonoBehaviour
 
     private void AlignPlayer(bool fallbackModeUsed)
     {
-        if(fallbackModeUsed)
+        if (fallbackModeUsed)
         {
             transform.rotation = gameSettings.GravityOrientation switch
             {
@@ -156,21 +217,32 @@ public class CharacterController : MonoBehaviour
                 Orientation.Right => Quaternion.Euler(0, 0, 90f),
                 _ => transform.rotation
             };
-        }else
+        }
+        else
         {
             float targetAngle = gameSettings.GravityOrientation switch
             {
                 Orientation.Up => 180,
                 Orientation.Down => 0,
-                Orientation.Left => 90,
-                Orientation.Right => 270,
+                Orientation.Left => 270,
+                Orientation.Right => 90,
                 _ => 0
             };
-            if(Vector2.Dot(Physics2D.gravity.normalized,_rg.velocity) > vMinTurn)
+            if (Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity) > vMinTurn)
             {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, targetAngle),
                     turnSpeed * Time.deltaTime);
             }
         }
+    }
+
+    private float GetHorizontalVelocityAligned()
+    {
+        return Vector2.Dot(Vector2.Perpendicular(Physics2D.gravity.normalized), _rg.velocity);
+    }
+
+    private float GetVerticalVelocityAligned()
+    {
+        return Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
     }
 }
