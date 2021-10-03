@@ -12,18 +12,40 @@ namespace ScriptableObjects
         [SerializeField] private float gravityStrength = 9.81f;
         public float gravityChangeInterval = 20;
         public float gravityChangeRandomness = 5;
-        public float musicVolume = 1;
-        public float sfxVolume = 1;
-        [SerializeField] public float oxygenMax = 100f;
-        [SerializeField] public float oxygenCurrent = 0f;
-        [SerializeField] public float oxygenStart = 70f;
-        [SerializeField] public float oxygenTank = 25f;
+        public float oxygenMax = 100f;
+        public float oxygenCurrent = 0f;
+        public float oxygenStart = 70f;
+        public float oxygenTank = 25f;
+        [SerializeField] private float musicVolume = 1;
+        [SerializeField] private float sfxVolume = 1;
+
+        public float MusicVolume
+        {
+            get => musicVolume;
+            set
+            {
+                musicVolume = value;
+                PlayerPrefs.SetFloat("MusicVolume", value);
+                PlayerPrefs.Save();
+            }
+        }
+
+        public float SfxVolume
+        {
+            get => sfxVolume;
+            set
+            {
+                sfxVolume = value;
+                PlayerPrefs.SetFloat("SfxVolume", value);
+                PlayerPrefs.Save();
+            }
+        }
 
 
         public Orientation GravityOrientation
         {
             get => gravityOrientation;
-           
+
             set
             {
                 gravityOrientation = value;
@@ -38,6 +60,10 @@ namespace ScriptableObjects
             }
         }
 
-       
+        private void OnEnable()
+        {
+            musicVolume = PlayerPrefs.HasKey("MusicVolume") ? PlayerPrefs.GetFloat("MusicVolume") : 1;
+            sfxVolume = PlayerPrefs.HasKey("SfxVolume") ? PlayerPrefs.GetFloat("SfxVolume") : 1;
+        }
     }
 }

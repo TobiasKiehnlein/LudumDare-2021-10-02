@@ -1,8 +1,17 @@
+using System;
 using ScriptableObjects;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AudioSetter : MonoBehaviour
 {
+    private Slider _slider;
+
+    private void Start()
+    {
+        _slider = GetComponent<Slider>();
+    }
+
     enum Type
     {
         Music,
@@ -11,15 +20,31 @@ public class AudioSetter : MonoBehaviour
 
     [SerializeField] private Type type;
     [SerializeField] private GameSettings gameSettings;
-    
+
     public void OnValueChanged(float value)
     {
         if (type == Type.Music)
         {
-            gameSettings.musicVolume = value;
-        } else if (type == Type.Sfx)
+            gameSettings.MusicVolume = value;
+        }
+        else if (type == Type.Sfx)
         {
-            gameSettings.sfxVolume = value;
+            gameSettings.SfxVolume = value;
+        }
+    }
+
+    private void Update()
+    {
+        if (_slider != null)
+        {
+            if (type == Type.Music)
+            {
+                _slider.value = gameSettings.MusicVolume;
+            }
+            else if (type == Type.Sfx)
+            {
+                _slider.value = gameSettings.SfxVolume;
+            }
         }
     }
 }

@@ -78,16 +78,16 @@ public class AudioManager : MonoBehaviour
     private void Update()
     {
         const double tolerance = .01;
-        if (Math.Abs(gameSettings.musicVolume - _localMusicVolume) > tolerance)
+        if (Math.Abs(gameSettings.MusicVolume - _localMusicVolume) > tolerance)
         {
-            mixer.SetFloat("MusicVol", gameSettings.musicVolume * 80 - 80);
-            _localMusicVolume = gameSettings.musicVolume;
+            mixer.SetFloat("MusicVol", gameSettings.MusicVolume * 80 - 80);
+            _localMusicVolume = gameSettings.MusicVolume;
         }
 
-        if (Math.Abs(gameSettings.sfxVolume - _localSfxVolume) > tolerance)
+        if (Math.Abs(gameSettings.SfxVolume - _localSfxVolume) > tolerance)
         {
-            mixer.SetFloat("SfxVol", gameSettings.sfxVolume * 80 - 80);
-            _localSfxVolume = gameSettings.sfxVolume;
+            mixer.SetFloat("SfxVol", gameSettings.SfxVolume * 80 - 80);
+            _localSfxVolume = gameSettings.SfxVolume;
         }
     }
 }
