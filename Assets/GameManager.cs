@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-        gameSettings.GravityOrientation = Orientation.Down;
         _nextChange = gameSettings.gravityChangeInterval;
         _random = new Random();
         gameSettings.oxygenCurrent = gameSettings.oxygenStart;

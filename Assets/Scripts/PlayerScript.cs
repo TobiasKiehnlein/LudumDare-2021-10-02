@@ -11,14 +11,18 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
     [SerializeField] private float airForceMultiplier = 5f;
+
     [SerializeField] private float turnSpeed = 5f;
+
     //disabled to create consistent Naming
     //  [SerializeField] private float maxAirBoostSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
     [SerializeField] private float vMinTurn;
 
     [SerializeField] private float vMaxAcceleratableFloor = 9f;
+
     [SerializeField] private float vMaxAcceleratableAir = 5f;
+
     // Animation values
     [SerializeField] private float walkT = 0.2f;
     [SerializeField] private float runT = 3f;
@@ -156,11 +160,11 @@ public class PlayerScript : MonoBehaviour
                 _jumpLock = 0.1f;
                 _jumpAllowed = false;
             }
-            
+
             var force = gameSettings.GravityOrientation switch
             {
                 Orientation.Up => new Vector2(-_horizontalForce, 0),
-                Orientation.Down => new Vector2(_horizontalForce,0),
+                Orientation.Down => new Vector2(_horizontalForce, 0),
                 Orientation.Left => new Vector2(0, -_horizontalForce),
                 Orientation.Right => new Vector2(0, _horizontalForce),
                 _ => new Vector2(_horizontalForce, _rg.velocity.y)
@@ -244,14 +248,14 @@ public class PlayerScript : MonoBehaviour
     {
         var perpendicular = Vector2.Perpendicular(Physics2D.gravity.normalized);
         var currentSpeed = Vector2.Dot(_rg.velocity, perpendicular);
-        var factor = ScaleFactor(currentSpeed,vMaxAcceleratableFloor);
+        var factor = ScaleFactor(currentSpeed, vMaxAcceleratableFloor);
         return factor * force;
     }
-    
+
     //allows easy implementation of more fitting curves
     private static float ScaleFactor(float current, float targetMax)
     {
-        return 1 - (current / targetMax);
+        return Math.Abs(current - targetMax) / targetMax;
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -286,7 +290,7 @@ public class PlayerScript : MonoBehaviour
     {
         if (other.CompareTag("Collidable") && _groundCollisions > 0) --_groundCollisions;
     }
-    
+
     private bool UpdateOxygenConsumption(float horizontalInput)
     {
         if (Abs(horizontalInput) < Mathf.Epsilon) return false;
@@ -301,8 +305,8 @@ public class PlayerScript : MonoBehaviour
 
         return true;
     }
-    
-    private void ONOxygenTank( Component other)
+
+    private void ONOxygenTank(Component other)
     {
         gameSettings.oxygenCurrent += gameSettings.oxygenTank;
         gameSettings.oxygenCurrent = (gameSettings.oxygenCurrent > gameSettings.oxygenMax)
@@ -363,7 +367,7 @@ public class PlayerScript : MonoBehaviour
     {
         return Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
     }
-    
+
     private float UpdateMovementSpeed()
     {
         if (CheckRunButtonUI() || Input.GetKey(KeyCode.LeftShift))

@@ -48,6 +48,7 @@ namespace ScriptableObjects
 
             set
             {
+                return;
                 gravityOrientation = value;
                 Physics2D.gravity = value switch
                 {
@@ -62,6 +63,7 @@ namespace ScriptableObjects
 
         private void OnEnable()
         {
+            gravityOrientation = Orientation.Down;
             musicVolume = PlayerPrefs.HasKey("MusicVolume") ? PlayerPrefs.GetFloat("MusicVolume") : 1;
             sfxVolume = PlayerPrefs.HasKey("SfxVolume") ? PlayerPrefs.GetFloat("SfxVolume") : 1;
         }
