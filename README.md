@@ -52,6 +52,7 @@ Tobi
   - Add option to set max allowed appearances
   - Add option for probability per tile
 - Minimap
+  - Add icons to minimap
 - ui
 - Music
 - Sound

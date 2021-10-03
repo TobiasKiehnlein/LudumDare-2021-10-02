@@ -4,13 +4,12 @@ using Enums;
 using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Serialization;
 
 public class AudioManager : MonoBehaviour
 {
     [SerializeField] private AudioMixer mixer;
     [SerializeField] private GameSettings gameSettings;
-    
+
     private float _localSfxVolume = 1;
     private float _localMusicVolume = 1;
 
@@ -36,6 +35,7 @@ public class AudioManager : MonoBehaviour
     {
         _musicSources = GetComponents<AudioSource>().Where(x => x.loop).ToArray();
         _sfxSources = GetComponents<AudioSource>().Where(x => !x.loop).ToArray();
+        DontDestroyOnLoad(this.gameObject);
     }
 
     public void SetMusicMute(bool muted)
@@ -66,9 +66,9 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void StartSound(Music music)
+    public void StartSound(Music music, float time = 5)
     {
-        mixer.FindSnapshot(music.ToString()).TransitionTo(5);
+        mixer.FindSnapshot(music.ToString()).TransitionTo(time);
     }
 
     public void StopSound(Sfx sfx)
@@ -80,13 +80,13 @@ public class AudioManager : MonoBehaviour
         const double tolerance = .01;
         if (Math.Abs(gameSettings.musicVolume - _localMusicVolume) > tolerance)
         {
-            mixer.SetFloat("MusicVol", gameSettings.musicVolume*80-80);
+            mixer.SetFloat("MusicVol", gameSettings.musicVolume * 80 - 80);
             _localMusicVolume = gameSettings.musicVolume;
         }
 
         if (Math.Abs(gameSettings.sfxVolume - _localSfxVolume) > tolerance)
         {
-            mixer.SetFloat("SfxVol", gameSettings.sfxVolume*80-80);
+            mixer.SetFloat("SfxVol", gameSettings.sfxVolume * 80 - 80);
             _localSfxVolume = gameSettings.sfxVolume;
         }
     }

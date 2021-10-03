@@ -45,10 +45,10 @@ public class SpaceManAnimator : MonoBehaviour
 
     public void Start()
     {
-        _animator = this.GetComponentInChildren<Animator>();
+        _animator = GetComponentInChildren<Animator>();
         foreach (var state in _statesToAnimation)
         {
-            _statesToAnimationHash.Add(state.Key, state.Value.ConvertAll(str => Animator.StringToHash(str)));
+            _statesToAnimationHash.Add(state.Key, state.Value.ConvertAll(Animator.StringToHash));
         }
     }
 

@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
         _nextChange = gameSettings.gravityChangeInterval;
         _random = new Random();
         gameSettings.oxygenCurrent = gameSettings.oxygenStart;
+        AudioManager.Instance.StartSound(Music.Silent);
     }
 
     // Update is called once per frame
