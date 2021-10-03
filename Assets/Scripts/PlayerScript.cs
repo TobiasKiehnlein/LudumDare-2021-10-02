@@ -11,9 +11,9 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
     [SerializeField] private float airForceMultiplier = 5f;
-
+    [SerializeField] private float maxDistanceToWallUntilBlocked = 1.5f;
     [SerializeField] private float turnSpeed = 5f;
-
+    [SerializeField] private float scalingFactorSpeedInputStop =.5f;
     //disabled to create consistent Naming
     //  [SerializeField] private float maxAirBoostSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
@@ -43,13 +43,14 @@ public class PlayerScript : MonoBehaviour
     private bool _jumpAllowed;
     private float _jumpLock;
     private Rigidbody2D _rg;
-    private Vector2 _vel = new Vector2(0, 0);
+   // private Vector2 _vel = new Vector2(0, 0);
 
     private SpaceManAnimator _animator;
     [SerializeField] private float spaceManRotationSpeed = 10f;
     private float _spaceManRotationGoal = 0f;
 
     private bool _flagOxygenApplied;
+    private bool _flagRaycastWallProximityFound = false;
 
     private int _groundCollisions = 0;
 
@@ -63,6 +64,7 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        _flagRaycastWallProximityFound = false;
         _flagOxygenApplied = false;
 
         _jumpLock -= Time.deltaTime;
@@ -74,7 +76,10 @@ public class PlayerScript : MonoBehaviour
 
         var animatorCanMove = _animator.CanMove();
         var horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
-        var heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
+        var heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0; 
+       horizontalInput *= RayCheck(horizontalInput);
+       // Debug.Log(Vector2.Perpendicular(Physics2D.gravity));
+     //   Debug.Log(horizontalInput);
         if (!IsGrounded)
         {
             _horizontalForce = horizontalInput * airForceMultiplier * movingAcceleration;
@@ -175,7 +180,7 @@ public class PlayerScript : MonoBehaviour
             var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
             if (Mathf.Abs(horizontalInput) > 0.1 || absHorizontalVelocityAligned >= walkT)
             {
-                Debug.Log(absHorizontalVelocityAligned);
+               
                 if (absHorizontalVelocityAligned < runT)
                 {
                     _animator.Animate(SpaceManAnimator.AnimationState.Walk);
@@ -244,10 +249,30 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    private float RayCheck(float horizontalInput)
+    {
+        
+        
+        var desiredDirection = Mathf.Sign(horizontalInput)*Vector2.Perpendicular(Physics2D.gravity.normalized);
+        var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity, LayerMask.GetMask("Wall"));
+        var vel = _rg.velocity;
+        var stopped = res.distance < maxDistanceToWallUntilBlocked;
+        Debug.Log(vel);
+        vel = ( stopped  ) ?   Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized , vel)  : vel;
+        Debug.Log(vel);
+        _rg.velocity = vel;
+        _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
+        return (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
+
+    }
+
+   
+
+
     private Vector2 RescaleToMaxVelocity(Vector2 force)
     {
         var perpendicular = Vector2.Perpendicular(Physics2D.gravity.normalized);
-        var currentSpeed = Vector2.Dot(_rg.velocity, perpendicular);
+        var currentSpeed = Mathf.Abs(Vector2.Dot(_rg.velocity, perpendicular));
         var factor = ScaleFactor(currentSpeed, vMaxAcceleratableFloor);
         return factor * force;
     }
@@ -260,7 +285,7 @@ public class PlayerScript : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        float verticalImpactVelocity = Mathf.Abs(Vector2.Dot(Physics2D.gravity.normalized, other.relativeVelocity));
+        var verticalImpactVelocity = Mathf.Abs(Vector2.Dot(Physics2D.gravity.normalized, other.relativeVelocity));
 
         if (IsGrounded)
         {
