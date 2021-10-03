@@ -6,17 +6,19 @@ using UnityEngine.Serialization;
 
 public class PlayerScript : MonoBehaviour
 {
-    public bool IsGrounded => _groundCollisions > 0;
+    private bool IsGrounded => _groundCollisions > 0;
     [SerializeField] private float jumpForce = 400.0f;
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
     [SerializeField] private float airForceMultiplier = 5f;
     [SerializeField] private float turnSpeed = 5f;
-    [SerializeField] private float maxAirBoostSpeed = 5f;
+    //disabled to create consistent Naming
+    //  [SerializeField] private float maxAirBoostSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
-
     [SerializeField] private float vMinTurn;
 
+    [SerializeField] private float vMaxAcceleratableFloor = 9f;
+    [SerializeField] private float vMaxAcceleratableAir = 5f;
     // Animation values
     [SerializeField] private float walkT = 0.2f;
     [SerializeField] private float runT = 3f;
@@ -87,12 +89,12 @@ public class PlayerScript : MonoBehaviour
             if (gameSettings.GravityOrientation == Orientation.Down ||
                 gameSettings.GravityOrientation == Orientation.Up)
             {
-                if (Mathf.Abs(_rg.velocity.x) > maxAirBoostSpeed && currentVelocity.x * _horizontalForce > 0)
+                if (Mathf.Abs(_rg.velocity.x) > vMaxAcceleratableAir && currentVelocity.x * _horizontalForce > 0)
                     _horizontalForce = 0;
             }
             else
             {
-                if (Mathf.Abs(_rg.velocity.y) > maxAirBoostSpeed && currentVelocity.y * _horizontalForce > 0)
+                if (Mathf.Abs(_rg.velocity.y) > vMaxAcceleratableAir && currentVelocity.y * _horizontalForce > 0)
                     _horizontalForce = 0;
             }
 
@@ -154,17 +156,17 @@ public class PlayerScript : MonoBehaviour
                 _jumpLock = 0.1f;
                 _jumpAllowed = false;
             }
-
-            _vel = gameSettings.GravityOrientation switch
+            
+            var force = gameSettings.GravityOrientation switch
             {
-                Orientation.Up => new Vector2(-_horizontalForce, _rg.velocity.y),
-                Orientation.Down => new Vector2(_horizontalForce, _rg.velocity.y),
-                Orientation.Left => new Vector2(_rg.velocity.x, -_horizontalForce),
-                Orientation.Right => new Vector2(_rg.velocity.x, _horizontalForce),
+                Orientation.Up => new Vector2(-_horizontalForce, 0),
+                Orientation.Down => new Vector2(_horizontalForce,0),
+                Orientation.Left => new Vector2(0, -_horizontalForce),
+                Orientation.Right => new Vector2(0, _horizontalForce),
                 _ => new Vector2(_horizontalForce, _rg.velocity.y)
             };
-
-            _rg.velocity = _vel;
+            force = RescaleToMaxVelocity(force);
+            _rg.AddForce(force);
 
             var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
             if (Mathf.Abs(horizontalInput) > 0.1 || absHorizontalVelocityAligned >= walkT)
@@ -236,6 +238,20 @@ public class PlayerScript : MonoBehaviour
         {
             Suffocate();
         }
+    }
+
+    private Vector2 RescaleToMaxVelocity(Vector2 force)
+    {
+        var perpendicular = Vector2.Perpendicular(Physics2D.gravity.normalized);
+        var currentSpeed = Vector2.Dot(_rg.velocity, perpendicular);
+        var factor = ScaleFactor(currentSpeed,vMaxAcceleratableFloor);
+        return factor * force;
+    }
+    
+    //allows easy implementation of more fitting curves
+    private static float ScaleFactor(float current, float targetMax)
+    {
+        return 1 - (current / targetMax);
     }
 
     private void OnCollisionEnter2D(Collision2D other)
