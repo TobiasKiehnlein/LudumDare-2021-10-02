@@ -1,15 +1,17 @@
 using System;
 using Enums;
+using JetBrains.Annotations;
 using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class CharacterController : MonoBehaviour
+public class PlayerScript : MonoBehaviour
 {
     public GameObject player;
     public bool isGrounded = true;
     [SerializeField] private float jumpForce = 400.0f;
     [SerializeField] private float movingAcceleration = 5.0f;
+    [SerializeField] private float runningAcceleration = 7.0f;
     [SerializeField] private float turnSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
 
@@ -24,8 +26,12 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float landMiddleT = 2f;
 
     [SerializeField] private float landHardT = 10f;
-    // public GravityManager gravity;
 
+    // public GravityManager gravity;
+    [SerializeField] private float oxygenConsumptionMoving;
+    [SerializeField] private float oxygenConsumptionRunning;
+    [SerializeField] private float oxygenConsumptionIdle;
+    [SerializeField] private float oxygenConsumptionJump;
 
     private float _horizontalForce;
 
@@ -35,6 +41,7 @@ public class CharacterController : MonoBehaviour
     private Vector2 _vel = new Vector2(0, 0);
 
     private SpaceManAnimator _animator;
+    private bool _flagOxygenApplied;
 
     // Start is called before the first frame update
     private void Start()
@@ -46,6 +53,7 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        _flagOxygenApplied = false;
         _jumpLock -= Time.deltaTime;
         if (_jumpLock < 0)
         {
@@ -81,11 +89,17 @@ public class CharacterController : MonoBehaviour
                 if (Mathf.Abs(_rg.velocity.y) > 5 && currentVelocity.y * _horizontalForce > 0) _horizontalForce = 0;
             }
 
+            if (_horizontalForce > Mathf.Epsilon)
+            {
+                gameSettings.oxygenCurrent -= oxygenConsumptionMoving * Time.deltaTime;
+                _flagOxygenApplied = true;
+            }
+
             horizontalMovementDirection *= _horizontalForce;
             _rg.AddForce(horizontalMovementDirection);
 
-            float verticalVelocityAligned = GetVerticalVelocityAligned();
-            float absVerticalVelocityAligned = Mathf.Abs(verticalVelocityAligned);
+
+            var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
             if (absVerticalVelocityAligned < fallT)
             {
                 _animator.Float();
@@ -101,8 +115,8 @@ public class CharacterController : MonoBehaviour
         }
         else
         {
-            _horizontalForce = horizontalInput * movingAcceleration;
-
+            _horizontalForce = horizontalInput * UpdateMovementSpeed();
+            _flagOxygenApplied = UpdateOxygenConsumption(horizontalInput);
 
             if (_jumpAllowed && heightInput == 1)
             {
@@ -126,7 +140,8 @@ public class CharacterController : MonoBehaviour
                 }
 
                 _animator.Jump();
-
+                gameSettings.oxygenCurrent -= oxygenConsumptionJump;
+                _flagOxygenApplied = true;
                 _jumpLock = 0.1f;
                 _jumpAllowed = false;
             }
@@ -142,8 +157,7 @@ public class CharacterController : MonoBehaviour
 
             _rg.velocity = _vel;
 
-            float horizontalVelocityAligned = GetHorizontalVelocityAligned();
-            float absHorizontalVelocityAligned = Mathf.Abs(horizontalVelocityAligned);
+            var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
             if (absHorizontalVelocityAligned < walkT)
             {
                 _animator.Stand();
@@ -162,11 +176,39 @@ public class CharacterController : MonoBehaviour
         AlignPlayer(false);
 
         isGrounded = false;
+        if (_flagOxygenApplied)
+        {
+        }
+        else
+        {
+            gameSettings.oxygenCurrent -= oxygenConsumptionIdle;
+        }
+
+        if (gameSettings.oxygenCurrent <= Mathf.Epsilon)
+        {
+            Suffocate();
+        }
+    }
+
+
+    private bool UpdateOxygenConsumption(float horizontalInput)
+    {
+        if (Abs(horizontalInput) < Mathf.Epsilon) return false;
+        if (CheckRunButtonUI() || Input.GetKey(KeyCode.LeftShift))
+        {
+            gameSettings.oxygenCurrent -= oxygenConsumptionRunning;
+        }
+        else
+        {
+            gameSettings.oxygenCurrent -= oxygenConsumptionMoving;
+        }
+
+        return true;
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        float verticalImpactVelocity = Mathf.Abs(Vector2.Dot(Physics2D.gravity.normalized, other.relativeVelocity));
+        var verticalImpactVelocity = Mathf.Abs(Vector2.Dot(Physics2D.gravity.normalized, other.relativeVelocity));
 
         if (verticalImpactVelocity < landMiddleT)
         {
@@ -186,6 +228,16 @@ public class CharacterController : MonoBehaviour
     {
         if (other.CompareTag("Hole")) Ejection();
         if (other.CompareTag("Collidable")) isGrounded = true;
+        if (other.CompareTag("OxygenTank")) ONOxygenTank(other);
+    }
+
+    private void ONOxygenTank( Component other)
+    {
+        gameSettings.oxygenCurrent += gameSettings.oxygenTank;
+        gameSettings.oxygenCurrent = (gameSettings.oxygenCurrent > gameSettings.oxygenMax)
+            ? gameSettings.oxygenMax
+            : gameSettings.oxygenCurrent;
+        GameObject.Destroy(other.gameObject);
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -244,5 +296,26 @@ public class CharacterController : MonoBehaviour
     private float GetVerticalVelocityAligned()
     {
         return Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
+    }
+
+    private float UpdateMovementSpeed()
+    {
+        if (CheckRunButtonUI() || Input.GetKey(KeyCode.LeftShift))
+            return runningAcceleration;
+
+        return movingAcceleration;
+    }
+
+    //TODO (obviously) (Wenn Tobi einen Sprintbutton parallel zu shift einabut)
+    private static bool CheckRunButtonUI()
+    {
+        return
+            false;
+    }
+
+    //Todo. gäme över o2 aus
+    private void Suffocate()
+    {
+        throw new NotImplementedException();
     }
 }

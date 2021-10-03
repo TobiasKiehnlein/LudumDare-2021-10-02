@@ -12,21 +12,20 @@ public class GameManager : MonoBehaviour
     private Random _random;
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         gameSettings.GravityOrientation = Orientation.Down;
         _nextChange = gameSettings.gravityChangeInterval;
         _random = new Random();
+        gameSettings.oxygenCurrent = gameSettings.oxygenStart;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (Time.time > _nextChange)
-        {
-            TriggerGravityChange();
-            _nextChange += gameSettings.gravityChangeInterval + (float) _random.NextDouble() * gameSettings.gravityChangeRandomness * 2 - gameSettings.gravityChangeRandomness;
-        }
+        if (!(Time.time > _nextChange)) return;
+        TriggerGravityChange();
+        _nextChange += gameSettings.gravityChangeInterval + (float) _random.NextDouble() * gameSettings.gravityChangeRandomness * 2 - gameSettings.gravityChangeRandomness;
     }
 
     private void TriggerGravityChange()

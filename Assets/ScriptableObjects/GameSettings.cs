@@ -1,6 +1,7 @@
 ﻿using System;
 using Enums;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ScriptableObjects
 {
@@ -11,12 +12,18 @@ namespace ScriptableObjects
         [SerializeField] private float gravityStrength = 9.81f;
         public float gravityChangeInterval = 20;
         public float gravityChangeRandomness = 5;
-        public float sfxVolume = 1;
         public float musicVolume = 1;
+        public float sfxVolume = 1;
+        [SerializeField] public float oxygenMax = 100f;
+        [SerializeField] public float oxygenCurrent = 0f;
+        [SerializeField] public float oxygenStart = 70f;
+        [SerializeField] public float oxygenTank = 25f;
+
 
         public Orientation GravityOrientation
         {
             get => gravityOrientation;
+           
             set
             {
                 gravityOrientation = value;
@@ -30,5 +37,7 @@ namespace ScriptableObjects
                 };
             }
         }
+
+       
     }
 }
