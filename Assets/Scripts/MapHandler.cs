@@ -36,7 +36,6 @@ public class MapHandler : MonoBehaviour
 
                 var go = Instantiate(tile.Prefab, transform);
                 go.transform.localPosition = new Vector3 {x = i * mapSettings.tileSize, y = j * mapSettings.tileSize};
-                go.transform.Rotate(Vector3.left, -90);
                 go.transform.Rotate(Vector3.up, (int) rotation);
             }
             catch (Exception e)

@@ -48,10 +48,3 @@ MonoBehaviour:
     CanFaceRight: 1
     CanFaceDown: 1
     CanFaceLeft: 1
-  - TileName: IRed
-    Type: 0
-    Prefab: {fileID: 919132149155446097, guid: cd614e1afffc73047ba6a0dfba93116d, type: 3}
-    CanFaceUp: 1
-    CanFaceRight: 1
-    CanFaceDown: 1
-    CanFaceLeft: 1
