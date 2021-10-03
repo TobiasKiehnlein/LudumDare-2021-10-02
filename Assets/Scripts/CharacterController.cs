@@ -13,6 +13,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float turnSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
 
+    [SerializeField] private float vMinTurn;
     // public GravityManager gravity;
 
 
@@ -52,8 +53,8 @@ public class CharacterController : MonoBehaviour
             {
                 Orientation.Up => Vector2.left,
                 Orientation.Down => Vector2.right,
-                Orientation.Left => Vector2.up,
-                Orientation.Right => Vector2.down,
+                Orientation.Left => Vector2.down,
+                Orientation.Right => Vector2.up,
                 _ => Vector2.zero
             };
 
@@ -107,8 +108,8 @@ public class CharacterController : MonoBehaviour
             {
                 Orientation.Up => new Vector2(-_horizontalForce, _rg.velocity.y),
                 Orientation.Down => new Vector2(_horizontalForce, _rg.velocity.y),
-                Orientation.Left => new Vector2(_rg.velocity.x, _horizontalForce),
-                Orientation.Right => new Vector2(_rg.velocity.x, -_horizontalForce),
+                Orientation.Left => new Vector2(_rg.velocity.x, -_horizontalForce),
+                Orientation.Right => new Vector2(_rg.velocity.x, _horizontalForce),
                 _ => new Vector2(_horizontalForce, _rg.velocity.y)
             };
 
@@ -165,9 +166,11 @@ public class CharacterController : MonoBehaviour
                 Orientation.Right => 270,
                 _ => 0
             };
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, targetAngle),
-                turnSpeed * Time.deltaTime);
+            if(Vector2.Dot(Physics2D.gravity.normalized,_rg.velocity) > vMinTurn)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, targetAngle),
+                    turnSpeed * Time.deltaTime);
+            }
         }
     }
 }
