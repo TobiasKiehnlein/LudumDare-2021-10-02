@@ -14,7 +14,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private GameSettings gameSettings;
 
     // public GravityManager gravity;
-    private Orientation _currentOrientation = Orientation.Down;
+    
 
     private float _horizontalForce;
 
@@ -83,7 +83,7 @@ public class CharacterController : MonoBehaviour
             // verticalSpeed += fallingAcceleration * Time.deltaTime;
             _horizontalForce = horizontalInput * 5f * movingAcceleration;
 
-            var horizontalMovementDirection = _currentOrientation switch
+            var horizontalMovementDirection = gameSettings.GravityOrientation switch
             {
                 Orientation.Up => Vector2.left,
                 Orientation.Down => Vector2.right,
@@ -94,7 +94,7 @@ public class CharacterController : MonoBehaviour
 
             var currentVelocity = _rg.velocity;
 
-            if (_currentOrientation == Orientation.Down || _currentOrientation == Orientation.Up)
+            if (gameSettings.GravityOrientation == Orientation.Down || gameSettings.GravityOrientation == Orientation.Up)
             {
                 if (Mathf.Abs(_rg.velocity.x) > 5 && currentVelocity.x * _horizontalForce > 0) _horizontalForce = 0;
             }
@@ -113,7 +113,7 @@ public class CharacterController : MonoBehaviour
 
             if (_jumpAllowed && heightInput == 1)
             {
-                switch (_currentOrientation)
+                switch (gameSettings.GravityOrientation)
                 {
                     case Orientation.Up:
                         _rg.AddForce(new Vector2(0, -(jumpForce * _rg.mass)));
@@ -134,7 +134,7 @@ public class CharacterController : MonoBehaviour
                 _jumpAllowed = false;
             }
 
-            switch (_currentOrientation)
+            switch (gameSettings.GravityOrientation)
             {
                 case Orientation.Up:
                     _vel = new Vector2(-_horizontalForce, _rg.velocity.y);
@@ -180,17 +180,11 @@ public class CharacterController : MonoBehaviour
         return input < 0f ? -input : input;
     }
 
-    public void UpdatePlayerGravity(Orientation newOrientation)
-    {
-        _isUnAligned = true;
-        _oldOrientation = _currentOrientation;
-        _currentOrientation = newOrientation;
-    }
-
+  
     private void AlignPlayer()
     {
         float targetAngle = 0;
-        switch (_currentOrientation)
+        switch (gameSettings.GravityOrientation)
         {
             case Orientation.Up:
                 targetAngle = 180;
