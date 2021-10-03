@@ -1,0 +1,93 @@
+﻿using System;
+using System.Linq;
+using Enums;
+using ScriptableObjects;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Serialization;
+
+public class AudioManager : MonoBehaviour
+{
+    [SerializeField] private AudioMixer mixer;
+    [SerializeField] private GameSettings gameSettings;
+    
+    private float _localSfxVolume = 1;
+    private float _localMusicVolume = 1;
+
+
+    public static AudioManager Instance { get; private set; }
+
+    private AudioSource[] _musicSources;
+    private AudioSource[] _sfxSources;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    private void Start()
+    {
+        _musicSources = GetComponents<AudioSource>().Where(x => x.loop).ToArray();
+        _sfxSources = GetComponents<AudioSource>().Where(x => !x.loop).ToArray();
+    }
+
+    public void SetMusicMute(bool muted)
+    {
+        foreach (var musicSource in _musicSources)
+        {
+            musicSource.mute = muted;
+        }
+    }
+
+    public void SetSfxMute(bool muted)
+    {
+        foreach (var source in _sfxSources)
+        {
+            source.mute = muted;
+        }
+    }
+
+    public void StartSound(Sfx sfx)
+    {
+        try
+        {
+            _sfxSources[(int) sfx].Play();
+        }
+        catch (Exception)
+        {
+            Debug.LogWarning($"The audio No. ${sfx} couldn't be played");
+        }
+    }
+
+    public void StartSound(Music music)
+    {
+        mixer.FindSnapshot(music.ToString()).TransitionTo(5);
+    }
+
+    public void StopSound(Sfx sfx)
+    {
+    }
+
+    private void Update()
+    {
+        const double tolerance = .01;
+        if (Math.Abs(gameSettings.musicVolume - _localMusicVolume) > tolerance)
+        {
+            mixer.SetFloat("MusicVol", gameSettings.musicVolume*80-80);
+            _localMusicVolume = gameSettings.musicVolume;
+        }
+
+        if (Math.Abs(gameSettings.sfxVolume - _localSfxVolume) > tolerance)
+        {
+            mixer.SetFloat("SfxVol", gameSettings.sfxVolume*80-80);
+            _localSfxVolume = gameSettings.sfxVolume;
+        }
+    }
+}

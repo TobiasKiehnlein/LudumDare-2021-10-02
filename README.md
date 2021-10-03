@@ -44,14 +44,27 @@ Alex
 - Character Controller
 - space station ejection
 - portal logic
-- doors?
 - fast switching gravity?
 
 Tobi
 
 - Map Generation
+  - Add option to set max allowed appearances
+  - Add option for probability per tile
 - Minimap
 - ui
+- Music
+- Sound
+  - Footstep
+  - Siren
+  - ground hit
+    - hard
+    - 3 steps normal
+  - swoosh while falling fast
+  - oxygen nearly gone, grasping for air
+  - air flow at wall holes
+  - oxygen refill
+  - teleport
 
 Peter
 

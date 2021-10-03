@@ -11,7 +11,9 @@ namespace ScriptableObjects
         [SerializeField] private float gravityStrength = 9.81f;
         public float gravityChangeInterval = 20;
         public float gravityChangeRandomness = 5;
-        
+        public float sfxVolume = 1;
+        public float musicVolume = 1;
+
         public Orientation GravityOrientation
         {
             get => gravityOrientation;
