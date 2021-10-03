@@ -1,18 +1,18 @@
 using System;
 using Enums;
-using JetBrains.Annotations;
 using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class PlayerScript : MonoBehaviour
 {
-    public GameObject player;
-    public bool isGrounded = true;
+    public bool IsGrounded => _groundCollisions > 0;
     [SerializeField] private float jumpForce = 400.0f;
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
+    [SerializeField] private float airForceMultiplier = 5f;
     [SerializeField] private float turnSpeed = 5f;
+    [SerializeField] private float maxAirBoostSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
 
     [SerializeField] private float vMinTurn;
@@ -27,7 +27,6 @@ public class PlayerScript : MonoBehaviour
 
     [SerializeField] private float landHardT = 10f;
 
-    // public GravityManager gravity;
     [SerializeField] private float oxygenConsumptionMoving;
     [SerializeField] private float oxygenConsumptionRunning;
     [SerializeField] private float oxygenConsumptionIdle;
@@ -41,7 +40,12 @@ public class PlayerScript : MonoBehaviour
     private Vector2 _vel = new Vector2(0, 0);
 
     private SpaceManAnimator _animator;
+    [SerializeField] private float spaceManRotationSpeed = 10f;
+    private float _spaceManRotationGoal = 0f;
+
     private bool _flagOxygenApplied;
+
+    private int _groundCollisions = 0;
 
     // Start is called before the first frame update
     private void Start()
@@ -54,6 +58,7 @@ public class PlayerScript : MonoBehaviour
     private void Update()
     {
         _flagOxygenApplied = false;
+
         _jumpLock -= Time.deltaTime;
         if (_jumpLock < 0)
         {
@@ -61,12 +66,12 @@ public class PlayerScript : MonoBehaviour
             _jumpAllowed = true;
         }
 
-        var horizontalInput = Input.GetAxis("Horizontal");
-        var heightInput = (int) Input.GetAxis("Jump");
-        if (!isGrounded)
+        var animatorCanMove = _animator.CanMove();
+        var horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
+        var heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
+        if (!IsGrounded)
         {
-            // verticalSpeed += fallingAcceleration * Time.deltaTime;
-            _horizontalForce = horizontalInput * 5f * movingAcceleration;
+            _horizontalForce = horizontalInput * airForceMultiplier * movingAcceleration;
 
             var horizontalMovementDirection = gameSettings.GravityOrientation switch
             {
@@ -82,11 +87,13 @@ public class PlayerScript : MonoBehaviour
             if (gameSettings.GravityOrientation == Orientation.Down ||
                 gameSettings.GravityOrientation == Orientation.Up)
             {
-                if (Mathf.Abs(_rg.velocity.x) > 5 && currentVelocity.x * _horizontalForce > 0) _horizontalForce = 0;
+                if (Mathf.Abs(_rg.velocity.x) > maxAirBoostSpeed && currentVelocity.x * _horizontalForce > 0)
+                    _horizontalForce = 0;
             }
             else
             {
-                if (Mathf.Abs(_rg.velocity.y) > 5 && currentVelocity.y * _horizontalForce > 0) _horizontalForce = 0;
+                if (Mathf.Abs(_rg.velocity.y) > maxAirBoostSpeed && currentVelocity.y * _horizontalForce > 0)
+                    _horizontalForce = 0;
             }
 
             if (_horizontalForce > Mathf.Epsilon)
@@ -98,25 +105,25 @@ public class PlayerScript : MonoBehaviour
             horizontalMovementDirection *= _horizontalForce;
             _rg.AddForce(horizontalMovementDirection);
 
-
             var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
             if (absVerticalVelocityAligned < fallT)
             {
-                _animator.Float();
+                _animator.Animate(SpaceManAnimator.AnimationState.Float);
             }
             else if (absVerticalVelocityAligned < freeFallT)
             {
-                _animator.Fall();
+                _animator.Animate(SpaceManAnimator.AnimationState.Fall);
             }
             else
             {
-                _animator.FreeFall();
+                _animator.Animate(SpaceManAnimator.AnimationState.FreeFall);
             }
         }
         else
         {
             _horizontalForce = horizontalInput * UpdateMovementSpeed();
             _flagOxygenApplied = UpdateOxygenConsumption(horizontalInput);
+
 
             if (_jumpAllowed && heightInput == 1)
             {
@@ -139,9 +146,11 @@ public class PlayerScript : MonoBehaviour
                         break;
                 }
 
-                _animator.Jump();
+                _animator.Animate(SpaceManAnimator.AnimationState.Jump);
+
                 gameSettings.oxygenCurrent -= oxygenConsumptionJump;
                 _flagOxygenApplied = true;
+
                 _jumpLock = 0.1f;
                 _jumpAllowed = false;
             }
@@ -158,24 +167,63 @@ public class PlayerScript : MonoBehaviour
             _rg.velocity = _vel;
 
             var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
-            if (absHorizontalVelocityAligned < walkT)
+            if (Mathf.Abs(horizontalInput) > 0.1 || absHorizontalVelocityAligned >= walkT)
             {
-                _animator.Stand();
-            }
-            else if (absHorizontalVelocityAligned < runT)
-            {
-                _animator.Walk();
+                Debug.Log(absHorizontalVelocityAligned);
+                if (absHorizontalVelocityAligned < runT)
+                {
+                    _animator.Animate(SpaceManAnimator.AnimationState.Walk);
+                }
+                else
+                {
+                    _animator.Animate(SpaceManAnimator.AnimationState.Run);
+                }
             }
             else
             {
-                _animator.Run();
+                _animator.Animate(SpaceManAnimator.AnimationState.Stand);
             }
         }
 
-
         AlignPlayer(false);
 
-        isGrounded = false;
+        SpaceManAnimator.AnimatorState animatorState = _animator.GetCurrentState();
+        float spaceManRotation = _animator.gameObject.transform.localEulerAngles.y;
+        if (animatorCanMove)
+        {
+            // Set _spaceManRotationGoal based on input
+            if (horizontalInput > 0)
+            {
+                _spaceManRotationGoal = -90;
+            }
+            else if (horizontalInput < 0)
+            {
+                _spaceManRotationGoal = 90;
+            }
+        }
+        else if (animatorState == SpaceManAnimator.AnimatorState.FreeFalling)
+        {
+            _spaceManRotationGoal = 0;
+        }
+
+        if (Mathf.Abs(_spaceManRotationGoal - spaceManRotation) < 0.05)
+        {
+            _animator.gameObject.transform.localRotation = Quaternion.Euler(0f, _spaceManRotationGoal, 0f);
+        }
+        else
+        {
+            _animator.gameObject.transform.localRotation = Quaternion.Lerp(_animator.gameObject.transform.localRotation,
+                Quaternion.Euler(0f, _spaceManRotationGoal, 0f), Time.deltaTime * spaceManRotationSpeed);
+        }
+
+        // Fix grounded animation when not correctly triggered
+        if (IsGrounded && (animatorState == SpaceManAnimator.AnimatorState.Falling ||
+                           animatorState == SpaceManAnimator.AnimatorState.Floating ||
+                           animatorState == SpaceManAnimator.AnimatorState.FreeFalling))
+        {
+            _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
+        }
+
         if (_flagOxygenApplied)
         {
         }
@@ -190,7 +238,39 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        float verticalImpactVelocity = Mathf.Abs(Vector2.Dot(Physics2D.gravity.normalized, other.relativeVelocity));
 
+        if (IsGrounded)
+        {
+            if (verticalImpactVelocity < landMiddleT)
+            {
+                _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
+            }
+            else if (verticalImpactVelocity < landHardT)
+            {
+                _animator.Animate(SpaceManAnimator.AnimationState.LandMiddle);
+            }
+            else
+            {
+                _animator.Animate(SpaceManAnimator.AnimationState.LandHard);
+            }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Hole")) Ejection();
+        if (other.CompareTag("Collidable")) ++_groundCollisions;
+        if (other.CompareTag("OxygenTank")) ONOxygenTank(other);
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Collidable") && _groundCollisions > 0) --_groundCollisions;
+    }
+    
     private bool UpdateOxygenConsumption(float horizontalInput)
     {
         if (Abs(horizontalInput) < Mathf.Epsilon) return false;
@@ -205,32 +285,7 @@ public class PlayerScript : MonoBehaviour
 
         return true;
     }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        var verticalImpactVelocity = Mathf.Abs(Vector2.Dot(Physics2D.gravity.normalized, other.relativeVelocity));
-
-        if (verticalImpactVelocity < landMiddleT)
-        {
-            _animator.LandEasy();
-        }
-        else if (verticalImpactVelocity < landHardT)
-        {
-            _animator.LandMiddle();
-        }
-        else
-        {
-            _animator.LandHard();
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Hole")) Ejection();
-        if (other.CompareTag("Collidable")) isGrounded = true;
-        if (other.CompareTag("OxygenTank")) ONOxygenTank(other);
-    }
-
+    
     private void ONOxygenTank( Component other)
     {
         gameSettings.oxygenCurrent += gameSettings.oxygenTank;
@@ -238,11 +293,6 @@ public class PlayerScript : MonoBehaviour
             ? gameSettings.oxygenMax
             : gameSettings.oxygenCurrent;
         GameObject.Destroy(other.gameObject);
-    }
-
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.CompareTag("Collidable")) isGrounded = true;
     }
 
     private void Ejection()
@@ -297,7 +347,7 @@ public class PlayerScript : MonoBehaviour
     {
         return Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
     }
-
+    
     private float UpdateMovementSpeed()
     {
         if (CheckRunButtonUI() || Input.GetKey(KeyCode.LeftShift))
@@ -306,14 +356,13 @@ public class PlayerScript : MonoBehaviour
         return movingAcceleration;
     }
 
-    //TODO (obviously) (Wenn Tobi einen Sprintbutton parallel zu shift einabut)
+    //TODO (For touch support)
     private static bool CheckRunButtonUI()
     {
-        return
-            false;
+        return false;
     }
 
-    //Todo. gäme över o2 aus
+    //Todo.
     private void Suffocate()
     {
         throw new NotImplementedException();

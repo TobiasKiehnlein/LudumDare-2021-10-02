@@ -16,3 +16,9 @@ MonoBehaviour:
   gravityStrength: 5
   gravityChangeInterval: 20
   gravityChangeRandomness: 5
+  musicVolume: 1
+  sfxVolume: 1
+  oxygenMax: 100
+  oxygenCurrent: 70
+  oxygenStart: 70
+  oxygenTank: 25
