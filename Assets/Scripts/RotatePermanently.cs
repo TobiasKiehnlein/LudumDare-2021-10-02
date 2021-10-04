@@ -5,10 +5,11 @@ using UnityEngine;
 public class RotatePermanently : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private Vector3 angle = Vector3.up;
 
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(Vector3.up, Time.deltaTime * speed);
+        transform.Rotate(angle, Time.deltaTime * speed);
     }
 }
