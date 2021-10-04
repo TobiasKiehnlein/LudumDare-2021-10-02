@@ -212,6 +212,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8153063498180622769}
   - component: {fileID: 6378656098662874832}
+  - component: {fileID: 6840503054880777337}
   m_Layer: 0
   m_Name: OxygenTank
   m_TagString: OxygenTank
@@ -252,6 +253,19 @@ CapsuleCollider2D:
   m_Offset: {x: 0.0028862357, y: 0.005772352}
   m_Size: {x: 1.0599235, y: 2.0621233}
   m_Direction: 0
+--- !u!114 &6840503054880777337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7250664800766656135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e6c993956b95fb4894c6aabae7ee569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deSpawnRate: 0.5
 --- !u!1001 &7049344732375274366
 PrefabInstance:
   m_ObjectHideFlags: 0
