@@ -8,6 +8,7 @@ using UnityEngine.Serialization;
 public class PlayerScript : MonoBehaviour
 {
     #region SerializeFields
+
     [SerializeField] private float jumpForce = 400.0f;
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
@@ -31,6 +32,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float oxygenConsumptionJump;
     [SerializeField] private float spaceManRotationSpeed = 10f;
     [SerializeField] private ScoreStatistics scoreStatistics;
+
     #endregion
 
     #region Members
@@ -49,7 +51,6 @@ public class PlayerScript : MonoBehaviour
     private bool animatorCanMove;
     private float horizontalInput;
     private int heightInput;
-    
 
     #endregion
 
@@ -66,7 +67,6 @@ public class PlayerScript : MonoBehaviour
         _animator = GetComponentInChildren<SpaceManAnimator>();
     }
 
- 
 
     #region MovementImpementation
 
@@ -103,7 +103,6 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    
 
     private void Jump()
     {
@@ -154,12 +153,12 @@ public class PlayerScript : MonoBehaviour
 
     private void AnimateAirMovement()
     {
+        AudioManager.Instance.StopSound(Sfx.FootSteps);
         var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
         if (absVerticalVelocityAligned < fallT)
         {
             _animator.Animate(SpaceManAnimator.AnimationState.Float);
             AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
-            
         }
         else if (absVerticalVelocityAligned < freeFallT)
         {
@@ -181,6 +180,7 @@ public class PlayerScript : MonoBehaviour
             if (absHorizontalVelocityAligned < runT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Walk);
+                AudioManager.Instance.StartSound(Sfx.FootSteps);
                 AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
                 scoreStatistics.timeWalking += Time.deltaTime;
             }
@@ -188,6 +188,7 @@ public class PlayerScript : MonoBehaviour
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Run);
                 AudioManager.Instance.StartSound(Music.IntenseDrums, 2f);
+                AudioManager.Instance.StartSound(Sfx.FootSteps);
                 scoreStatistics.timeRunning += Time.deltaTime;
             }
         }
@@ -195,6 +196,7 @@ public class PlayerScript : MonoBehaviour
         {
             _animator.Animate(SpaceManAnimator.AnimationState.Stand);
             AudioManager.Instance.StartSound(Music.SilentDrums, 2f);
+            AudioManager.Instance.StopSound(Sfx.FootSteps);
             scoreStatistics.timeIdleOrFloating += Time.deltaTime;
         }
     }
@@ -243,7 +245,8 @@ public class PlayerScript : MonoBehaviour
 
     #endregion
 
-    #region  Misc
+    #region Misc
+
     private void CleanUpUpdateInput()
     {
         _flagRaycastWallProximityFound = false;
@@ -266,6 +269,7 @@ public class PlayerScript : MonoBehaviour
         _horizontalForce = horizontalInput * UpdateMovementSpeed();
         _flagOxygenApplied = UpdateOxygenConsumption(horizontalInput);
     }
+
     private void OxygenCalculation()
     {
         if (_flagOxygenApplied)
@@ -287,7 +291,6 @@ public class PlayerScript : MonoBehaviour
 
     private void Update()
     {
-       
         CleanUpUpdateInput();
         Debug.Log("" + heightInput + "  " + _horizontalForce + "  " + animatorCanMove + "  " + IsGrounded);
         if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)
@@ -304,10 +307,12 @@ public class PlayerScript : MonoBehaviour
                 {
                     Jump();
                 }
+
                 Walk();
                 AnimateWalkMovement();
             }
         }
+
         MiscAnimationStuff();
         AlignPlayer(false);
         OxygenCalculation();
@@ -315,21 +320,21 @@ public class PlayerScript : MonoBehaviour
 
     private float HorizontalInputCheck(float horizontalInput)
     {
-    //    var desiredDirection = Mathf.Sign(horizontalInput) * Vector2.Perpendicular(Physics2D.gravity.normalized);
-     //   var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity,
-     //       LayerMask.GetMask("Wall"));
-      //  var vel = _rg.velocity;
-     //   var stopped = res.distance < maxDistanceToWallUntilBlocked;
-  
-     //   vel = (stopped) ? Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized, vel) : vel;
-      
-      //  _rg.velocity = vel;
-     //   _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
-     //   var resReturn = (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
+        //    var desiredDirection = Mathf.Sign(horizontalInput) * Vector2.Perpendicular(Physics2D.gravity.normalized);
+        //   var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity,
+        //       LayerMask.GetMask("Wall"));
+        //  var vel = _rg.velocity;
+        //   var stopped = res.distance < maxDistanceToWallUntilBlocked;
 
-     //   if (IsGrounded || resReturn <= Mathf.Epsilon) return resReturn;
-      //  return (Vector2.Dot(desiredDirection, vel) > vMaxAcceleratableAir) ? 0 : 1;
-      return 1;
+        //   vel = (stopped) ? Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized, vel) : vel;
+
+        //  _rg.velocity = vel;
+        //   _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
+        //   var resReturn = (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
+
+        //   if (IsGrounded || resReturn <= Mathf.Epsilon) return resReturn;
+        //  return (Vector2.Dot(desiredDirection, vel) > vMaxAcceleratableAir) ? 0 : 1;
+        return 1;
     }
 
 
@@ -358,7 +363,9 @@ public class PlayerScript : MonoBehaviour
             if (state == SpaceManAnimator.AnimatorState.FreeFalling)
             {
                 scoreStatistics.numberOfHardCrashes++;
+                AudioManager.Instance.StartSound(Sfx.HugeSlap);
             }
+
             if (verticalImpactVelocity < landMiddleT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
@@ -372,7 +379,7 @@ public class PlayerScript : MonoBehaviour
             else
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.LandHard);
-                AudioManager.Instance.StartSound(Sfx.HugeSlap);
+                AudioManager.Instance.StartSound(Sfx.Hit);
             }
         }
     }
@@ -479,7 +486,7 @@ public class PlayerScript : MonoBehaviour
     {
         return false;
     }
-    
+
     private void Suffocate()
     {
         // TODO trigger animations

@@ -73,6 +73,7 @@ public class AudioManager : MonoBehaviour
 
     public void StopSound(Sfx sfx)
     {
+        SfxHandler.Instance.StopSfx(sfx);
     }
 
     private void Update()
