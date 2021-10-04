@@ -2,15 +2,12 @@ using System;
 using Enums;
 using ScriptableObjects;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 public class PlayerScript : MonoBehaviour
 {
     #region SerializeFields
-
-   
-
-    
     [SerializeField] private float jumpForce = 400.0f;
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
@@ -58,7 +55,13 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
-        scoreStatistics.score = 0;
+        scoreStatistics.countJumping = 0;
+        scoreStatistics.timeRunning = 0;
+        scoreStatistics.timeIdleOrFloating = 0;
+        scoreStatistics.timeWalkingInAir = 0;
+        scoreStatistics.timeWalking = 0;
+        scoreStatistics.numberOfHardCrashes = 0;
+        scoreStatistics.gameWon = false;
         _rg = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<SpaceManAnimator>();
     }
@@ -279,24 +282,6 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    private void ScoreCalculation()
-    {
-        scoreStatistics.score = scoreStatistics.timeRunning * scoreStatistics.scoreRunning +
-                                scoreStatistics.timeWalking * scoreStatistics.scoreWalking +
-                                scoreStatistics.countJumping * .5f * scoreStatistics.scoreJumping +
-                                scoreStatistics.scoreHardCrashes * scoreStatistics.numberOfHardCrashes +
-                                scoreStatistics.timeIdleOrFloating * scoreStatistics.scoreIdleOrFloating +
-                                scoreStatistics.timeWalkingInAir * scoreStatistics.scoreWalkingInAir;
-
-
-
-
-
-
-
-
-    }
-
     #endregion
 
 
@@ -324,7 +309,6 @@ public class PlayerScript : MonoBehaviour
         MiscAnimationStuff();
         AlignPlayer(false);
         OxygenCalculation();
-        ScoreCalculation();
     }
 
     private float HorizontalInputCheck(float horizontalInput)
@@ -492,10 +476,11 @@ public class PlayerScript : MonoBehaviour
     {
         return false;
     }
-
-    //Todo.
+    
     private void Suffocate()
     {
-        throw new NotImplementedException();
+        // TODO trigger animations
+        gameSettings.oxygenCurrent = 0;
+        SceneManager.LoadScene(2);
     }
 }
