@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Enums;
 using ScriptableObjects;
 using UnityEngine;
@@ -22,7 +23,6 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float vMaxAcceleratableAir = 5f;
     [SerializeField] private float walkT = 0.2f;
     [SerializeField] private float runT = 3f;
-    [SerializeField] private float fallT = 1f;
     [SerializeField] private float freeFallT = 20f;
     [SerializeField] private float landMiddleT = 2f;
     [SerializeField] private float landHardT = 10f;
@@ -81,7 +81,7 @@ public class PlayerScript : MonoBehaviour
             Orientation.Right => Vector2.up,
             _ => Vector2.zero
         };
-      
+
 
         _vel *= _horizontalForce;
         _vel += Physics2D.gravity.normalized *
@@ -151,16 +151,12 @@ public class PlayerScript : MonoBehaviour
     {
         AudioManager.Instance.StopSound(Sfx.FootSteps);
         var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
-        if (absVerticalVelocityAligned < fallT)
-        {
-            _animator.Animate(SpaceManAnimator.AnimationState.Float);
-            AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
-        }
-        else if (absVerticalVelocityAligned < freeFallT)
+        if (absVerticalVelocityAligned < freeFallT)
         {
             _animator.Animate(SpaceManAnimator.AnimationState.Fall);
             AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
         }
+
         else
         {
             _animator.Animate(SpaceManAnimator.AnimationState.FreeFall);
@@ -229,14 +225,16 @@ public class PlayerScript : MonoBehaviour
                 Quaternion.Euler(0f, _spaceManRotationGoal, 0f), Time.deltaTime * spaceManRotationSpeed);
         }
 
-        // Fix grounded animation when not correctly triggered
-        if (IsGrounded && (animatorState == SpaceManAnimator.AnimatorState.Falling ||
-                           animatorState == SpaceManAnimator.AnimatorState.Floating ||
-                           animatorState == SpaceManAnimator.AnimatorState.FreeFalling))
+        // Fix grounded animation when not correctly triggered -- Floating removed: seems to be better without
+        /*if (IsGrounded && (animatorState == SpaceManAnimator.AnimatorState.Falling ||
+                           animatorState == SpaceManAnimator.AnimatorState.FreeFalling)
+                       && _animator.LastAnimationState != SpaceManAnimator.AnimationState.LandEasy
+                       && _animator.LastAnimationState != SpaceManAnimator.AnimationState.LandMiddle
+                       && _animator.LastAnimationState != SpaceManAnimator.AnimationState.LandHard)
         {
             _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
             AudioManager.Instance.StartSound(Sfx.Hit);
-        }
+        }*/
     }
 
     #endregion
@@ -245,7 +243,6 @@ public class PlayerScript : MonoBehaviour
 
     private void CleanUpUpdateInput()
     {
-      
         _flagOxygenApplied = false;
         _jumpLock -= Time.deltaTime;
         if (_jumpLock < 0)
@@ -257,7 +254,6 @@ public class PlayerScript : MonoBehaviour
         animatorCanMove = _animator.CanMove();
         horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
         heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
-        
     }
 
     private void PrepareGroundMovement()
@@ -273,7 +269,7 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            gameSettings.oxygenCurrent -= oxygenConsumptionIdle*Time.deltaTime;
+            gameSettings.oxygenCurrent -= oxygenConsumptionIdle * Time.deltaTime;
         }
 
         if (gameSettings.oxygenCurrent <= Mathf.Epsilon)
@@ -289,32 +285,31 @@ public class PlayerScript : MonoBehaviour
     {
         CleanUpUpdateInput();
         Debug.Log("" + heightInput + "  " + _horizontalForce + "  " + animatorCanMove + "  " + IsGrounded);
-        
-            if (!IsGrounded)
+
+        if (!IsGrounded)
+        {
+            if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)
             {
-                if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)
-                {
                 MoveInAir();
                 AnimateAirMovement();
-                }
             }
-            else
+        }
+        else
+        {
+            PrepareGroundMovement();
+            if (_jumpAllowed && heightInput == 1)
             {
-                PrepareGroundMovement();
-                if (_jumpAllowed && heightInput == 1)
-                {
-                    Jump();
-                }
-
-                Walk();
-                AnimateWalkMovement();
+                Jump();
             }
-       
+
+            Walk();
+            AnimateWalkMovement();
+        }
+
         MiscAnimationStuff();
         AlignPlayer(false);
         OxygenCalculation();
     }
-
 
 
     // private Vector2 RescaleToMaxVelocity(Vector2 force)
@@ -380,11 +375,11 @@ public class PlayerScript : MonoBehaviour
         if (Abs(horizontalInput) < Mathf.Epsilon) return false;
         if (CheckRunButtonUI() || Input.GetKey(KeyCode.LeftShift))
         {
-            gameSettings.oxygenCurrent -= oxygenConsumptionRunning*Time.deltaTime;
+            gameSettings.oxygenCurrent -= oxygenConsumptionRunning * Time.deltaTime;
         }
         else
         {
-            gameSettings.oxygenCurrent -= oxygenConsumptionMoving*Time.deltaTime;
+            gameSettings.oxygenCurrent -= oxygenConsumptionMoving * Time.deltaTime;
         }
 
         return true;
@@ -468,8 +463,14 @@ public class PlayerScript : MonoBehaviour
 
     private void Suffocate()
     {
-        // TODO trigger animations
+        _animator.Animate(SpaceManAnimator.AnimationState.Dead);
         gameSettings.oxygenCurrent = 0;
+        StartCoroutine(SwitchToFinalScene());
+    }
+
+    private IEnumerator SwitchToFinalScene()
+    {
+        yield return new WaitForSeconds(4);
         SceneManager.LoadScene(2);
     }
 }

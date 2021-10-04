@@ -12,25 +12,28 @@ public class SpaceManAnimator : MonoBehaviour
     private const string RunStr = "Run";
     private const string FallStr = "Fall";
     private const string FreeFallStr = "FreeFall";
-    private const string FloatStr = "Float";
     private const string JumpStr = "Jump";
     private const string LandEasyStr = "EasyLanding";
     private const string LandMiddleStr = "Landing";
     private const string LandHardStr = "HardLanding";
+    private const string DeadStr = "Dead";
 
+    // States of the animator
     public enum AnimatorState
     {
         Falling,
+        Jump,
         FreeFalling,
         StandingUp,
         Standing,
         Walking,
         Running,
-        Floating,
+        Dead,
         Transition,
         None
     }
 
+    // Animation triggered externally
     public enum AnimationState
     {
         Stand,
@@ -38,44 +41,48 @@ public class SpaceManAnimator : MonoBehaviour
         Run,
         Fall,
         FreeFall,
-        Float,
         Jump,
         LandEasy,
         LandMiddle,
-        LandHard
+        LandHard,
+        Dead
     }
+
+    public AnimationState LastAnimationState => _lastAnimationState;
 
     private AnimationState _lastAnimationState = AnimationState.Fall;
 
-    public enum SpaceManControl
+    // Animator parameters that can be triggered/changed
+    private enum SpaceManControl
     {
         Moving,
         Walk,
         Run,
         Fall,
         FreeFall,
-        Float,
         Jump,
         LandEasy,
         LandMiddle,
-        LandHard
+        LandHard,
+        Dead
     }
 
-    private readonly Dictionary<string, AnimatorState> _animationToAnimatorStates = new Dictionary<string, AnimatorState>
-    {
-        {"Falling", AnimatorState.FreeFalling},
-        {"Falling Idle", AnimatorState.Falling},
-        {"Falling Flat Impact", AnimatorState.StandingUp},
-        {"Standing Up", AnimatorState.StandingUp},
-        {"Jumping Down", AnimatorState.StandingUp},
-        {"Falling To Landing", AnimatorState.StandingUp},
-        {"Hard Landing", AnimatorState.StandingUp},
-        {"Idle", AnimatorState.Standing},
-        {"Walking", AnimatorState.Walking},
-        {"Running", AnimatorState.Running},
-        {"Floating", AnimatorState.Floating},
-        {"Jumping Up", AnimatorState.Floating}
-    };
+    private readonly Dictionary<string, AnimatorState> _animationToAnimatorStates =
+        new Dictionary<string, AnimatorState>
+        {
+            {"Falling", AnimatorState.FreeFalling},
+            {"Falling Idle", AnimatorState.Falling},
+            {"Falling Flat Impact", AnimatorState.StandingUp},
+            {"Standing Up", AnimatorState.StandingUp},
+            {"Jumping Down", AnimatorState.StandingUp},
+            {"Falling To Landing", AnimatorState.StandingUp},
+            {"Hard Landing", AnimatorState.StandingUp},
+            {"Idle", AnimatorState.Standing},
+            {"Walking", AnimatorState.Walking},
+            {"Running", AnimatorState.Running},
+            {"Jumping Up", AnimatorState.Jump},
+            {"Dead", AnimatorState.Dead}
+        };
 
     private Dictionary<int, AnimatorState> _animationHashToAnimatorStates;
 
@@ -86,11 +93,11 @@ public class SpaceManAnimator : MonoBehaviour
         {RunStr, SpaceManControl.Run},
         {FallStr, SpaceManControl.Fall},
         {FreeFallStr, SpaceManControl.FreeFall},
-        {FloatStr, SpaceManControl.Float},
         {JumpStr, SpaceManControl.Jump},
         {LandEasyStr, SpaceManControl.LandEasy},
         {LandMiddleStr, SpaceManControl.LandMiddle},
-        {LandHardStr, SpaceManControl.LandHard}
+        {LandHardStr, SpaceManControl.LandHard},
+        {DeadStr, SpaceManControl.Dead}
     };
 
     private Dictionary<SpaceManControl, int> _controlToId;
@@ -122,48 +129,36 @@ public class SpaceManAnimator : MonoBehaviour
     public bool CanMove()
     {
         var currentState = GetCurrentState();
-        return currentState != AnimatorState.StandingUp && currentState != AnimatorState.FreeFalling;
+        return currentState != AnimatorState.StandingUp && currentState != AnimatorState.FreeFalling &&
+               currentState != AnimatorState.Dead;
     }
 
-    public void Animate(AnimationState animationState)
+    public void Animate(AnimationState animationState, bool force = false)
     {
-        if (_lastAnimationState == animationState) return;
-        
-        
         var currentState = GetCurrentState();
+        if (!force)
+        {
+            if (_lastAnimationState == animationState) return;
 
-        if ((currentState == AnimatorState.Transition || currentState == AnimatorState.StandingUp) &&
-            (_lastAnimationState == AnimationState.LandEasy || _lastAnimationState == AnimationState.LandMiddle ||
-             _lastAnimationState == AnimationState.LandHard))
-            return;
+            if ((currentState == AnimatorState.Dead) || (currentState == AnimatorState.Transition &&
+                                                         _lastAnimationState == AnimationState.Dead))
+                return; // if dead or in transition to it: do not animate
+            
+        }
 
         var updatedState = false;
-        
+
         switch (animationState)
         {
             case AnimationState.Fall:
-                if (currentState != AnimatorState.StandingUp)
-                {
-                    _animator.SetTrigger(_controlToId[SpaceManControl.Fall]);
-                    updatedState = true;
-                }
-
-                break;
-            case AnimationState.Float:
-                if (currentState != AnimatorState.StandingUp)
-                {
-                    _animator.SetTrigger(_controlToId[SpaceManControl.Float]);
-                    updatedState = true;
-                }
-
+                if (currentState == AnimatorState.Jump || currentState == AnimatorState.StandingUp) break;
+                ResetTriggers();
+                _animator.SetTrigger(_controlToId[SpaceManControl.Fall]);
+                updatedState = true;
                 break;
             case AnimationState.FreeFall:
-                if (currentState != AnimatorState.StandingUp)
-                {
-                    _animator.SetTrigger(_controlToId[SpaceManControl.FreeFall]);
-                    updatedState = true;
-                }
-
+                _animator.SetTrigger(_controlToId[SpaceManControl.FreeFall]);
+                updatedState = true;
                 break;
             case AnimationState.Jump:
                 _animator.SetTrigger(_controlToId[SpaceManControl.Jump]);
@@ -171,43 +166,37 @@ public class SpaceManAnimator : MonoBehaviour
                 break;
             case AnimationState.LandEasy:
                 _animator.SetTrigger(_controlToId[SpaceManControl.LandEasy]);
+                _animator.ResetTrigger(_controlToId[SpaceManControl.Fall]);
                 updatedState = true;
                 break;
             case AnimationState.LandMiddle:
                 _animator.SetTrigger(_controlToId[SpaceManControl.LandMiddle]);
+                _animator.ResetTrigger(_controlToId[SpaceManControl.Fall]);
                 updatedState = true;
                 break;
             case AnimationState.LandHard:
                 _animator.SetTrigger(_controlToId[SpaceManControl.LandHard]);
+                _animator.ResetTrigger(_controlToId[SpaceManControl.Fall]);
                 updatedState = true;
                 break;
             case AnimationState.Stand:
-                if (currentState != AnimatorState.StandingUp)
-                {
-                    _animator.SetBool(_controlToId[SpaceManControl.Moving], false);
-                    updatedState = true;
-                }
-
+                _animator.SetBool(_controlToId[SpaceManControl.Moving], false);
+                updatedState = true;
                 break;
             case AnimationState.Walk:
-                if (currentState != AnimatorState.StandingUp)
-                {
-                    _animator.SetBool(_controlToId[SpaceManControl.Moving], true);
-                    _animator.SetTrigger(_controlToId[SpaceManControl.Walk]);
-                    _animator.ResetTrigger(_controlToId[SpaceManControl.Run]);
-                    updatedState = true;
-                }
-
+                _animator.SetBool(_controlToId[SpaceManControl.Moving], true);
+                _animator.SetTrigger(_controlToId[SpaceManControl.Walk]);
+                _animator.ResetTrigger(_controlToId[SpaceManControl.Run]);
+                updatedState = true;
                 break;
             case AnimationState.Run:
-                if (currentState != AnimatorState.StandingUp)
-                {
-                    _animator.SetBool(_controlToId[SpaceManControl.Moving], true);
-                    _animator.SetTrigger(_controlToId[SpaceManControl.Run]);
-                    _animator.ResetTrigger(_controlToId[SpaceManControl.Walk]);
-                    updatedState = true;
-                }
-
+                _animator.SetBool(_controlToId[SpaceManControl.Moving], true);
+                _animator.SetTrigger(_controlToId[SpaceManControl.Run]);
+                _animator.ResetTrigger(_controlToId[SpaceManControl.Walk]);
+                updatedState = true;
+                break;
+            case AnimationState.Dead:
+                _animator.SetBool(_controlToId[SpaceManControl.Dead], true);
                 break;
         }
 
@@ -216,9 +205,9 @@ public class SpaceManAnimator : MonoBehaviour
 
     public AnimatorState GetCurrentState(bool noTransition = false)
     {
-        if (_animator.IsInTransition(0) && !noTransition) return AnimatorState.Transition;
-        
-        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        AnimatorStateInfo stateInfo;
+        if (_animator.IsInTransition(0)) stateInfo = _animator.GetNextAnimatorStateInfo(0);
+        else stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
         if (_animationHashToAnimatorStates.TryGetValue(stateInfo.shortNameHash, out var state))
         {
             return state;
@@ -239,6 +228,4 @@ public class SpaceManAnimator : MonoBehaviour
             }
         }
     }
-
-
 }
