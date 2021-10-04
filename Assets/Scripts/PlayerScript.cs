@@ -8,6 +8,9 @@ public class PlayerScript : MonoBehaviour
 {
     #region SerializeFields
 
+   
+
+    
     [SerializeField] private float jumpForce = 400.0f;
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
@@ -30,7 +33,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float oxygenConsumptionIdle;
     [SerializeField] private float oxygenConsumptionJump;
     [SerializeField] private float spaceManRotationSpeed = 10f;
-
+    [SerializeField] private ScoreStatistics scoreStatistics;
     #endregion
 
     #region Members
@@ -49,37 +52,18 @@ public class PlayerScript : MonoBehaviour
     private bool animatorCanMove;
     private float horizontalInput;
     private int heightInput;
+    
 
     #endregion
 
     private void Start()
     {
+        scoreStatistics.score = 0;
         _rg = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<SpaceManAnimator>();
     }
 
-    private void CleanUpUpdateInput()
-    {
-        _flagRaycastWallProximityFound = false;
-        _flagOxygenApplied = false;
-        _jumpLock -= Time.deltaTime;
-        if (_jumpLock < 0)
-        {
-            _jumpLock = 0f;
-            _jumpAllowed = true;
-        }
-
-        animatorCanMove = _animator.CanMove();
-        horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
-        heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
-        horizontalInput *= HorizontalInputCheck(horizontalInput);
-    }
-
-    private void PrepareGroundMovement()
-    {
-        _horizontalForce = horizontalInput * UpdateMovementSpeed();
-        _flagOxygenApplied = UpdateOxygenConsumption(horizontalInput);
-    }
+ 
 
     #region MovementImpementation
 
@@ -105,7 +89,18 @@ public class PlayerScript : MonoBehaviour
                 Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
 
         _rg.velocity = _vel;
+        if (Mathf.Approximately(Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity),
+            Vector2.Dot(Vector2.one, _rg.velocity)))
+        {
+            scoreStatistics.timeIdleOrFloating += Time.deltaTime;
+        }
+        else
+        {
+            scoreStatistics.timeWalkingInAir += Time.deltaTime;
+        }
     }
+
+    
 
     private void Jump()
     {
@@ -132,7 +127,7 @@ public class PlayerScript : MonoBehaviour
 
         gameSettings.oxygenCurrent -= oxygenConsumptionJump;
         _flagOxygenApplied = true;
-
+        scoreStatistics.countJumping++;
         _jumpLock = 0.1f;
         _jumpAllowed = false;
     }
@@ -161,6 +156,7 @@ public class PlayerScript : MonoBehaviour
         {
             _animator.Animate(SpaceManAnimator.AnimationState.Float);
             AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
+            
         }
         else if (absVerticalVelocityAligned < freeFallT)
         {
@@ -183,17 +179,20 @@ public class PlayerScript : MonoBehaviour
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Walk);
                 AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
+                scoreStatistics.timeWalking += Time.deltaTime;
             }
             else
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Run);
                 AudioManager.Instance.StartSound(Music.IntenseDrums, 2f);
+                scoreStatistics.timeRunning += Time.deltaTime;
             }
         }
         else
         {
             _animator.Animate(SpaceManAnimator.AnimationState.Stand);
             AudioManager.Instance.StartSound(Music.SilentDrums, 2f);
+            scoreStatistics.timeIdleOrFloating += Time.deltaTime;
         }
     }
 
@@ -240,6 +239,29 @@ public class PlayerScript : MonoBehaviour
 
     #endregion
 
+    #region  Misc
+    private void CleanUpUpdateInput()
+    {
+        _flagRaycastWallProximityFound = false;
+        _flagOxygenApplied = false;
+        _jumpLock -= Time.deltaTime;
+        if (_jumpLock < 0)
+        {
+            _jumpLock = 0f;
+            _jumpAllowed = true;
+        }
+
+        animatorCanMove = _animator.CanMove();
+        horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
+        heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
+        horizontalInput *= HorizontalInputCheck(horizontalInput);
+    }
+
+    private void PrepareGroundMovement()
+    {
+        _horizontalForce = horizontalInput * UpdateMovementSpeed();
+        _flagOxygenApplied = UpdateOxygenConsumption(horizontalInput);
+    }
     private void OxygenCalculation()
     {
         if (_flagOxygenApplied)
@@ -255,6 +277,27 @@ public class PlayerScript : MonoBehaviour
             Suffocate();
         }
     }
+
+    private void ScoreCalculation()
+    {
+        scoreStatistics.score = scoreStatistics.timeRunning * scoreStatistics.scoreRunning +
+                                scoreStatistics.timeWalking * scoreStatistics.scoreWalking +
+                                scoreStatistics.countJumping * .5f * scoreStatistics.scoreJumping +
+                                scoreStatistics.scoreHardCrashes * scoreStatistics.numberOfHardCrashes +
+                                scoreStatistics.timeIdleOrFloating * scoreStatistics.scoreIdleOrFloating +
+                                scoreStatistics.timeWalkingInAir * scoreStatistics.scoreWalkingInAir;
+
+
+
+
+
+
+
+
+    }
+
+    #endregion
+
 
     private void Update()
     {
@@ -280,6 +323,7 @@ public class PlayerScript : MonoBehaviour
         MiscAnimationStuff();
         AlignPlayer(false);
         OxygenCalculation();
+        ScoreCalculation();
     }
 
     private float HorizontalInputCheck(float horizontalInput)
@@ -289,9 +333,9 @@ public class PlayerScript : MonoBehaviour
             LayerMask.GetMask("Wall"));
         var vel = _rg.velocity;
         var stopped = res.distance < maxDistanceToWallUntilBlocked;
-        Debug.Log(vel);
+  
         vel = (stopped) ? Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized, vel) : vel;
-        Debug.Log(vel);
+      
         _rg.velocity = vel;
         _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
         var resReturn = (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
@@ -321,6 +365,12 @@ public class PlayerScript : MonoBehaviour
 
         if (IsGrounded)
         {
+            // Increment for freefall landings
+            var state = _animator.GetCurrentState(true);
+            if (state == SpaceManAnimator.AnimatorState.FreeFalling)
+            {
+                scoreStatistics.numberOfHardCrashes++;
+            }
             if (verticalImpactVelocity < landMiddleT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
@@ -333,6 +383,9 @@ public class PlayerScript : MonoBehaviour
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.LandHard);
             }
+            
+            
+          
         }
     }
 

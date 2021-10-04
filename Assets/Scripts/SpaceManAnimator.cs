@@ -214,9 +214,9 @@ public class SpaceManAnimator : MonoBehaviour
         if (updatedState) _lastAnimationState = animationState;
     }
 
-    public AnimatorState GetCurrentState()
+    public AnimatorState GetCurrentState(bool noTransition = false)
     {
-        if (_animator.IsInTransition(0)) return AnimatorState.Transition;
+        if (_animator.IsInTransition(0) && !noTransition) return AnimatorState.Transition;
         
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
         if (_animationHashToAnimatorStates.TryGetValue(stateInfo.shortNameHash, out var state))
@@ -239,4 +239,6 @@ public class SpaceManAnimator : MonoBehaviour
             }
         }
     }
+
+
 }

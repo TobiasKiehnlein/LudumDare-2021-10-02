@@ -3160,6 +3160,9 @@ PrefabInstance:
       propertyPath: maxDistanceToWallUntilBlocked
       value: 0.65
       objectReference: {fileID: 0}
+      propertyPath: scoreStatistics
+      value: 
+      objectReference: {fileID: 11400000, guid: 2be8c82d1cc3070409f5f0070b25e5c0, type: 2}
     - target: {fileID: 8867961161673666372, guid: 2cd00c736686f2741ba8a3c90c4631e3, type: 3}
       propertyPath: m_RootOrder
       value: 3

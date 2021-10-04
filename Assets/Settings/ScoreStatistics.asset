@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f08db33aca04beaa695a0f319902c31, type: 3}
+  m_Name: ScoreStatistics
+  m_EditorClassIdentifier: 
+  timeWalking: 0
+  timeWalkingInAir: 0
+  countJumping: 0
+  timeRunning: 0
+  timeIdleOrFloating: 0
+  numberOfHardCrashes: 0
+  scoreWalkingInAir: 0
+  scoreWalking: 0
+  scoreJumping: 0
+  scoreRunning: 0
+  scoreIdleOrFloating: 0
+  scoreHardCrashes: 0

@@ -266,6 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d4ed94d6689ae41b120c94b9ab610a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: 0
   jumpForce: 220
   movingAcceleration: 4
   runningAcceleration: 7
@@ -288,6 +289,7 @@ MonoBehaviour:
   oxygenConsumptionIdle: 0
   oxygenConsumptionJump: 0
   spaceManRotationSpeed: 10
+  scoreStatistics: {fileID: 11400000, guid: 2be8c82d1cc3070409f5f0070b25e5c0, type: 2}
 --- !u!61 &2449426816328503155
 BoxCollider2D:
   m_ObjectHideFlags: 0
