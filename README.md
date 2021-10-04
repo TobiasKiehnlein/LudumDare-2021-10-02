@@ -1,72 +1,34 @@
-﻿# Ungravity
+# Ungravity
 
-## Goal
+This game was made during the Ludum Dare October 2021 event and was made in a time span of less than 72h.
 
-Reach the rescue rockets on the space station before your oxygen drops or you fly out of the space ship
+Every texture, every sound and every game object or script was made during the game jam.
+The only two exceptions are raw character animations which where loaded from [mixamo](https://www.mixamo.com/#/) (controller etc. were written during the jam) and minor sound effects (steps, horn, ground hit).
 
-## Info: Map
+## Background
+You awake in your space station after the experiment yesterday.
+You soon notice it has multiple breaches and it is only a question of time until you die if you can't reach your shuttle.
 
-- quadratic chunks
-- horizontal
-- vertical
-- t-junction
-- cross-junction
-- dead end
-- angle
+Very soon you'll realize the terrible implications of your experiment yesterday...
+## Gameplay
 
-## Design
+### Movement
+- A / D : Walking sideways
+- Space : Jump
+- Shift : Sprint
+- M     : toggle UI overlays on/off
 
-- space station
-- (white? metallic?) tube design
-- broken down
-- holes in walls and ground
-- jump and run plates with different orientations and intended effects
-- space rescue rockets (game goal)
-- start tile with integrated tutorial
-- fixed gravitational areas (for specific jump and run sections)?
+### Mechanics
+- Your goal is to reach the space ship - at any cost!
+- Debris from your space station will allow you to move - or block you
+- Instant movement on contact between paired portals
+- You will need to pick up oxygen canisters to avoid suffocation
+>! The gravity will randomly turn
+>! Gravity mines will trigger a chaotic series of gravity realignments
 
-
-## Sound effects
-
-- music (duh), maybe background noise, reverb, muffle (effect based)
-- portal switch
-- gravitation switch (multiple ones)
-- ground hits
-- footsteps
-- gravity alert (voice and siren)
-
-
-## TODOs
-
-Alex
-
-- Gravitation
-- Character Controller
-- space station ejection
-- portal logic
-- fast switching gravity?
-
-Tobi
-
-- Map Generation
-  - Add option to set max allowed appearances
-  - Add option for probability per tile
-- Minimap
-  - Add icons to minimap
-- ui
-- Music
-- Sound
-  - Footstep
-  - Siren
-  - ground hit
-    - hard
-    - 3 steps normal
-  - swoosh while falling fast
-  - oxygen nearly gone, grasping for air
-  - air flow at wall holes
-  - oxygen refill
-  - teleport
-
-Peter
-
-- obviously assets ^^
+## Finally
+It was a really fun jam. Hopefully all of you had as much fun as we did and you can now fully enjoy our game.
+For best performance you should obviously download it but most of it should work fine in WebGL.
+Leave a comment about things you like and/or dislike.
+Looking forward to play y'all games as well :D.
+  
