@@ -182,18 +182,18 @@ public class PlayerScript : MonoBehaviour
             if (absHorizontalVelocityAligned < runT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Walk);
-                AudioManager.Instance.StartSound(Music.SilentDrums, 2f);
+                AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
             }
             else
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Run);
-                AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
+                AudioManager.Instance.StartSound(Music.IntenseDrums, 2f);
             }
         }
         else
         {
             _animator.Animate(SpaceManAnimator.AnimationState.Stand);
-            AudioManager.Instance.StartSound(Music.Silent, 2f);
+            AudioManager.Instance.StartSound(Music.SilentDrums, 2f);
         }
     }
 
