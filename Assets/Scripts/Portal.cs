@@ -59,7 +59,7 @@ public class Portal : MonoBehaviour
         var quaternion = Quaternion.Euler(0, 0, theta);
 
         velocity = quaternion * velocity;
-        player.GetComponent<Rigidbody2D>().velocity = -velocity;
+        player.GetComponent<Rigidbody2D>().velocity = -1.2f * velocity;
         var transform1 = receiver.transform;
         player.transform.position = transform1.position + .5f * transform1.up;
         receiver.Sleep();

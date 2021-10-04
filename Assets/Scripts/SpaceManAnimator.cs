@@ -81,7 +81,7 @@ public class SpaceManAnimator : MonoBehaviour
             {"Walking", AnimatorState.Walking},
             {"Running", AnimatorState.Running},
             {"Jumping Up", AnimatorState.Jump},
-            {"Dead", AnimatorState.Dead}
+            {"Dying Backwards", AnimatorState.Dead}
         };
 
     private Dictionary<int, AnimatorState> _animationHashToAnimatorStates;

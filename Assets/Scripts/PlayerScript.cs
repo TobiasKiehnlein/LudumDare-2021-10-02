@@ -51,6 +51,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
+        Physics2D.gravity = new Vector2(0, -5);
         scoreStatistics.countJumping = 0;
         scoreStatistics.timeRunning = 0;
         scoreStatistics.timeIdleOrFloating = 0;
