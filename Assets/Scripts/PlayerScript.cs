@@ -234,6 +234,7 @@ public class PlayerScript : MonoBehaviour
                            animatorState == SpaceManAnimator.AnimatorState.FreeFalling))
         {
             _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
+            AudioManager.Instance.StartSound(Sfx.Hit);
         }
     }
 
@@ -365,7 +366,7 @@ public class PlayerScript : MonoBehaviour
 
         if (IsGrounded)
         {
-            // Increment for freefall landings
+            // Increment for free fall landings
             var state = _animator.GetCurrentState(true);
             if (state == SpaceManAnimator.AnimatorState.FreeFalling)
             {
@@ -374,18 +375,18 @@ public class PlayerScript : MonoBehaviour
             if (verticalImpactVelocity < landMiddleT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
+                AudioManager.Instance.StartSound(Sfx.Hit);
             }
             else if (verticalImpactVelocity < landHardT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.LandMiddle);
+                AudioManager.Instance.StartSound(Sfx.Hit);
             }
             else
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.LandHard);
+                AudioManager.Instance.StartSound(Sfx.HugeSlap);
             }
-            
-            
-          
         }
     }
 
