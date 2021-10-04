@@ -1,6 +1,6 @@
 # Ungravity
 
-This game was made during the Ludum Dare October 2021 event and was made in a time span of less than 72h.
+This game was made during the [Ludum Dare October 2021](ldj.am/$261566) event and was made in a time span of less than 72h.
 
 Every texture, every sound and every game object or script was made during the game jam.
 The only two exceptions are raw character animations which where loaded from [mixamo](https://www.mixamo.com/#/) (controller etc. were written during the jam) and minor sound effects (steps, horn, ground hit).
@@ -31,4 +31,10 @@ It was a really fun jam. Hopefully all of you had as much fun as we did and you 
 For best performance you should obviously download it but most of it should work fine in WebGL.
 Leave a comment about things you like and/or dislike.
 Looking forward to play y'all games as well :D.
+
+| Job                    | Who did it :D                                    |
+|------------------------|--------------------------------------------------|
+| MUSIC and SOUNDDESIGN  | [Tobias Kiehnlein](https://github.com/TobiasKiehnlein) (usually programmer)            |
+| GRAPHICS and ANIMATION | Zelberor (usually programmer)                    |
+| PROGRAMMING            | [Tobias Kiehnlein](https://github.com/TobiasKiehnlein) and Wartronic (usually chemist) |
   
