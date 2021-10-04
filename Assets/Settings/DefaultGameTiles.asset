@@ -15,35 +15,35 @@ MonoBehaviour:
   tiles:
   - TileName: X
     Type: 2
-    Prefab: {fileID: 7721271032254753576, guid: 74c86e8469c37ce478266a791d2e493f, type: 3}
+    Prefab: {fileID: 7223671783683461758, guid: 23ffa0f0997a0944398a5c2eef624d78, type: 3}
     CanFaceUp: 1
     CanFaceRight: 1
     CanFaceDown: 1
     CanFaceLeft: 1
   - TileName: T
     Type: 1
-    Prefab: {fileID: 3838492973724866389, guid: 6f88373f9e5f5bd40aae69da39377521, type: 3}
+    Prefab: {fileID: 574991613231968718, guid: eb50ac191bd8d53498ab377f179dcaa9, type: 3}
     CanFaceUp: 1
     CanFaceRight: 1
     CanFaceDown: 1
     CanFaceLeft: 1
   - TileName: I
     Type: 0
-    Prefab: {fileID: 7622566516543206823, guid: 19b725733400ccf479eb8d283cc17d58, type: 3}
+    Prefab: {fileID: 8835338246393293039, guid: 97706284988f8f14fac8a9ce68cd72d6, type: 3}
     CanFaceUp: 1
     CanFaceRight: 1
     CanFaceDown: 1
     CanFaceLeft: 1
   - TileName: L
     Type: 4
-    Prefab: {fileID: 938971734114036902, guid: a9b85e63b53ff4d4fb210013a64cf675, type: 3}
+    Prefab: {fileID: 133135723301298462, guid: 0521cc39faa160d48bf8f14ee8d6bb56, type: 3}
     CanFaceUp: 1
     CanFaceRight: 1
     CanFaceDown: 1
     CanFaceLeft: 1
   - TileName: D
     Type: 3
-    Prefab: {fileID: 1145611371470166340, guid: 29377d4791bca2f4982b99a4160ca35e, type: 3}
+    Prefab: {fileID: 4492545246431542358, guid: 8c147390d387bb2468d87d64faf6eb13, type: 3}
     CanFaceUp: 1
     CanFaceRight: 1
     CanFaceDown: 1
