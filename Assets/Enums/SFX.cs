@@ -2,8 +2,10 @@
 {
     public enum Sfx
     {
-        FootStep,
         FootSteps,
+        DirtySiren,
+        Hit,
+        HugeSlap
     }
 
     public enum Music

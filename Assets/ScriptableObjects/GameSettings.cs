@@ -60,6 +60,7 @@ namespace ScriptableObjects
                     Orientation.Right => new Vector2(gravityStrength, 0),
                     _ => new Vector2(0, -gravityStrength)
                 };
+                AudioManager.Instance.StartSound(Sfx.DirtySiren);
             }
         }
 
