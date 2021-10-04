@@ -14,11 +14,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float airForceMultiplier = 5f;
     [SerializeField] private float maxDistanceToWallUntilBlocked = 1.5f;
     [SerializeField] private float turnSpeed = 5f;
-
     [SerializeField] private float scalingFactorSpeedInputStop = .5f;
-
-    //disabled to create consistent Naming
-    //  [SerializeField] private float maxAirBoostSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
     [SerializeField] private float vMinTurn;
     [SerializeField] private float vMaxAcceleratableFloor = 9f;
@@ -38,41 +34,34 @@ public class PlayerScript : MonoBehaviour
     #endregion
 
     #region Members
+
     private Vector2 _vel = Vector2.zero;
     private bool IsGrounded => _groundCollisions > 0;
-
     private float _horizontalForce;
-
     private bool _jumpAllowed;
     private float _jumpLock;
-
     private Rigidbody2D _rg;
-    // private Vector2 _vel = new Vector2(0, 0);
-
     private SpaceManAnimator _animator;
-
     private float _spaceManRotationGoal = 0f;
-
     private bool _flagOxygenApplied;
     private bool _flagRaycastWallProximityFound = false;
-
     private int _groundCollisions = 0;
+    private bool animatorCanMove;
+    private float horizontalInput;
+    private int heightInput;
 
     #endregion
 
-    // Start is called before the first frame update
     private void Start()
     {
         _rg = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<SpaceManAnimator>();
     }
 
-    // Update is called once per frame
-    private void Update()
+    private void CleanUpUpdateInput()
     {
         _flagRaycastWallProximityFound = false;
         _flagOxygenApplied = false;
-
         _jumpLock -= Time.deltaTime;
         if (_jumpLock < 0)
         {
@@ -80,178 +69,179 @@ public class PlayerScript : MonoBehaviour
             _jumpAllowed = true;
         }
 
-        var animatorCanMove = _animator.CanMove();
-        var horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
-        var heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
-        horizontalInput *= RayCheck(horizontalInput);
-        // Debug.Log(Vector2.Perpendicular(Physics2D.gravity));
-        //   Debug.Log(horizontalInput);
-        if (!IsGrounded)
+        animatorCanMove = _animator.CanMove();
+        horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
+        heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
+        horizontalInput *= HorizontalInputCheck(horizontalInput);
+    }
+
+    private void PrepareGroundMovement()
+    {
+        _horizontalForce = horizontalInput * UpdateMovementSpeed();
+        _flagOxygenApplied = UpdateOxygenConsumption(horizontalInput);
+    }
+
+    #region MovementImpementation
+
+    private void MoveInAir()
+    {
+        _horizontalForce = horizontalInput * airForceMultiplier * movingAcceleration;
+        _vel = gameSettings.GravityOrientation switch
         {
-            if (!IsGrounded)
+            Orientation.Up => Vector2.left,
+            Orientation.Down => Vector2.right,
+            Orientation.Left => Vector2.down,
+            Orientation.Right => Vector2.up,
+            _ => Vector2.zero
+        };
+        if (_horizontalForce > Mathf.Epsilon)
+        {
+            gameSettings.oxygenCurrent -= oxygenConsumptionMoving * Time.deltaTime;
+            _flagOxygenApplied = true;
+        }
+
+        _vel *= _horizontalForce;
+        _vel += Physics2D.gravity.normalized *
+                Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
+
+        _rg.velocity = _vel;
+    }
+
+    private void Jump()
+    {
+        switch (gameSettings.GravityOrientation)
+        {
+            case Orientation.Up:
+                _rg.AddForce(Vector2.down * jumpForce * _rg.mass);
+                break;
+            case Orientation.Down:
+                _rg.AddForce(Vector2.up * jumpForce * _rg.mass);
+                break;
+            case Orientation.Left:
+                _rg.AddForce(Vector2.right * jumpForce * _rg.mass);
+                break;
+            case Orientation.Right:
+                _rg.AddForce(Vector2.left * jumpForce * _rg.mass);
+                break;
+            default:
+                _rg.AddForce(new Vector2(0, jumpForce * _rg.mass));
+                break;
+        }
+
+        _animator.Animate(SpaceManAnimator.AnimationState.Jump);
+
+        gameSettings.oxygenCurrent -= oxygenConsumptionJump;
+        _flagOxygenApplied = true;
+
+        _jumpLock = 0.1f;
+        _jumpAllowed = false;
+    }
+
+    private void Walk()
+    {
+        _vel = gameSettings.GravityOrientation switch
+        {
+            Orientation.Up => new Vector2(-_horizontalForce, _rg.velocity.y),
+            Orientation.Down => new Vector2(_horizontalForce, _rg.velocity.y),
+            Orientation.Left => new Vector2(_rg.velocity.x, -_horizontalForce),
+            Orientation.Right => new Vector2(_rg.velocity.x, _horizontalForce),
+            _ => new Vector2(_horizontalForce, _rg.velocity.y)
+        };
+        _rg.velocity = _vel;
+    }
+
+    #endregion
+
+    #region AnimationTrigger
+
+    private void AnimateAirMovement()
+    {
+        var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
+        if (absVerticalVelocityAligned < fallT)
+        {
+            _animator.Animate(SpaceManAnimator.AnimationState.Float);
+            AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
+        }
+        else if (absVerticalVelocityAligned < freeFallT)
+        {
+            _animator.Animate(SpaceManAnimator.AnimationState.Fall);
+            AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
+        }
+        else
+        {
+            _animator.Animate(SpaceManAnimator.AnimationState.FreeFall);
+            AudioManager.Instance.StartSound(Music.IntenseDrums, 2f);
+        }
+    }
+
+    private void AnimateWalkMovement()
+    {
+        var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
+        if (Mathf.Abs(horizontalInput) > 0.1 || absHorizontalVelocityAligned >= walkT)
+        {
+            if (absHorizontalVelocityAligned < runT)
             {
-                _horizontalForce = horizontalInput * airForceMultiplier * movingAcceleration;
-                _vel = gameSettings.GravityOrientation switch
-                {
-                    Orientation.Up => Vector2.left,
-                    Orientation.Down => Vector2.right,
-                    Orientation.Left => Vector2.down,
-                    Orientation.Right => Vector2.up,
-                    _ => Vector2.zero
-                };
-                if (_horizontalForce > Mathf.Epsilon)
-                {
-                    gameSettings.oxygenCurrent -= oxygenConsumptionMoving * Time.deltaTime;
-                    _flagOxygenApplied = true;
-                }
-
-               _vel *= _horizontalForce;
-               _vel += Physics2D.gravity.normalized *
-                   Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
-
-               _rg.velocity = _vel;
-                //TODO PETER: Updaten! Stimmt das noch?
-                var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
-                if (absVerticalVelocityAligned < fallT)
-                {
-                    _animator.Animate(SpaceManAnimator.AnimationState.Float);
-                }
-                else if (absVerticalVelocityAligned < freeFallT)
-                {
-                    _animator.Animate(SpaceManAnimator.AnimationState.Fall);
-                }
-                else
-                {
-                    _animator.Animate(SpaceManAnimator.AnimationState.FreeFall);
-                }
-            }
-
-            horizontalMovementDirection *= _horizontalForce;
-            _rg.AddForce(horizontalMovementDirection);
-
-            var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
-            if (absVerticalVelocityAligned < fallT)
-            {
-                _animator.Animate(SpaceManAnimator.AnimationState.Float);
-                AudioManager.Instance.StartSound(Music.MediumDrums,2f);
-            }
-            else if (absVerticalVelocityAligned < freeFallT)
-            {
-                _animator.Animate(SpaceManAnimator.AnimationState.Fall);
-                AudioManager.Instance.StartSound(Music.MediumDrums,2f);
+                _animator.Animate(SpaceManAnimator.AnimationState.Walk);
+                AudioManager.Instance.StartSound(Music.SilentDrums, 2f);
             }
             else
             {
-                _animator.Animate(SpaceManAnimator.AnimationState.FreeFall);
-                AudioManager.Instance.StartSound(Music.IntenseDrums,2f);
+                _animator.Animate(SpaceManAnimator.AnimationState.Run);
+                AudioManager.Instance.StartSound(Music.MediumDrums, 2f);
             }
         }
         else
         {
-            _horizontalForce = horizontalInput * UpdateMovementSpeed();
-            _flagOxygenApplied = UpdateOxygenConsumption(horizontalInput);
+            _animator.Animate(SpaceManAnimator.AnimationState.Stand);
+            AudioManager.Instance.StartSound(Music.Silent, 2f);
+        }
+    }
 
-
-                if (_jumpAllowed && heightInput == 1)
-                {
-                    switch (gameSettings.GravityOrientation)
-                    {
-                        case Orientation.Up:
-                            _rg.AddForce( Vector2.down *jumpForce * _rg.mass);
-                            break;
-                        case Orientation.Down:
-                            _rg.AddForce( Vector2.up *jumpForce * _rg.mass);
-                            break;
-                        case Orientation.Left:
-                            _rg.AddForce( Vector2.right *jumpForce * _rg.mass);
-                            break;
-                        case Orientation.Right:
-                            _rg.AddForce( Vector2.left *jumpForce * _rg.mass);
-                            break;
-                        default:
-                            _rg.AddForce(new Vector2(0, jumpForce * _rg.mass));
-                            break;
-                    }
-
-                    _animator.Animate(SpaceManAnimator.AnimationState.Jump);
-
-                    gameSettings.oxygenCurrent -= oxygenConsumptionJump;
-                    _flagOxygenApplied = true;
-
-                    _jumpLock = 0.1f;
-                    _jumpAllowed = false;
-                }
-
-                _vel = gameSettings.GravityOrientation switch
-                {
-                    Orientation.Up => new Vector2(-_horizontalForce, _rg.velocity.y),
-                    Orientation.Down => new Vector2(_horizontalForce, _rg.velocity.y),
-                    Orientation.Left => new Vector2(_rg.velocity.x, -_horizontalForce),
-                    Orientation.Right => new Vector2(_rg.velocity.x, _horizontalForce),
-                    _ => new Vector2(_horizontalForce, _rg.velocity.y)
-                };
-                _rg.velocity = _vel;
-                var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
-                if (Mathf.Abs(horizontalInput) > 0.1 || absHorizontalVelocityAligned >= walkT)
-                {
-                    if (absHorizontalVelocityAligned < runT)
-                    {
-                        _animator.Animate(SpaceManAnimator.AnimationState.Walk);
-                    }
-                    else
-                    {
-                        _animator.Animate(SpaceManAnimator.AnimationState.Run);
-                    }
-                }
-                else
-                {
-                    _animator.Animate(SpaceManAnimator.AnimationState.Stand);
-                }
-            }
-
-
-            SpaceManAnimator.AnimatorState animatorState = _animator.GetCurrentState();
-            float spaceManRotation = _animator.gameObject.transform.localEulerAngles.y;
-            if (animatorCanMove)
+    private void MiscAnimationStuff()
+    {
+        var animatorState = _animator.GetCurrentState();
+        var spaceManRotation = _animator.gameObject.transform.localEulerAngles.y;
+        if (animatorCanMove)
+        {
+            // Set _spaceManRotationGoal based on input
+            if (horizontalInput > 0)
             {
-                if (absHorizontalVelocityAligned < runT)
-                {
-                    _animator.Animate(SpaceManAnimator.AnimationState.Walk);
-                    AudioManager.Instance.StartSound(Music.SilentDrums,2f);
-                }
-                else if (horizontalInput < 0)
-                {
-                    _animator.Animate(SpaceManAnimator.AnimationState.Run);
-                    AudioManager.Instance.StartSound(Music.MediumDrums,2f);
-                }
+                _spaceManRotationGoal = -90;
             }
-            else if (animatorState == SpaceManAnimator.AnimatorState.FreeFalling)
+            else if (horizontalInput < 0)
             {
-                _animator.Animate(SpaceManAnimator.AnimationState.Stand);
-                AudioManager.Instance.StartSound(Music.Silent,2f);
-            }
-
-            if (Mathf.Abs(_spaceManRotationGoal - spaceManRotation) < 0.05)
-            {
-                _animator.gameObject.transform.localRotation = Quaternion.Euler(0f, _spaceManRotationGoal, 0f);
-            }
-            else
-            {
-                _animator.gameObject.transform.localRotation = Quaternion.Lerp(
-                    _animator.gameObject.transform.localRotation,
-                    Quaternion.Euler(0f, _spaceManRotationGoal, 0f), Time.deltaTime * spaceManRotationSpeed);
-            }
-
-            // Fix grounded animation when not correctly triggered
-            if (IsGrounded && (animatorState == SpaceManAnimator.AnimatorState.Falling ||
-                               animatorState == SpaceManAnimator.AnimatorState.Floating ||
-                               animatorState == SpaceManAnimator.AnimatorState.FreeFalling))
-            {
-                _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
+                _spaceManRotationGoal = 90;
             }
         }
+        else if (animatorState == SpaceManAnimator.AnimatorState.FreeFalling)
+        {
+            _spaceManRotationGoal = 0;
+        }
 
-        AlignPlayer(false);
+        if (Mathf.Abs(_spaceManRotationGoal - spaceManRotation) < 0.05)
+        {
+            _animator.gameObject.transform.localRotation = Quaternion.Euler(0f, _spaceManRotationGoal, 0f);
+        }
+        else
+        {
+            _animator.gameObject.transform.localRotation = Quaternion.Lerp(
+                _animator.gameObject.transform.localRotation,
+                Quaternion.Euler(0f, _spaceManRotationGoal, 0f), Time.deltaTime * spaceManRotationSpeed);
+        }
+
+        // Fix grounded animation when not correctly triggered
+        if (IsGrounded && (animatorState == SpaceManAnimator.AnimatorState.Falling ||
+                           animatorState == SpaceManAnimator.AnimatorState.Floating ||
+                           animatorState == SpaceManAnimator.AnimatorState.FreeFalling))
+        {
+            _animator.Animate(SpaceManAnimator.AnimationState.LandEasy);
+        }
+    }
+
+    #endregion
+
+    private void OxygenCalculation()
+    {
         if (_flagOxygenApplied)
         {
         }
@@ -266,10 +256,36 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        CleanUpUpdateInput();
+        if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)
+        {
+            if (!IsGrounded)
+            {
+                MoveInAir();
+                AnimateAirMovement();
+            }
+            else
+            {
+                PrepareGroundMovement();
+                if (_jumpAllowed && heightInput == 1)
+                {
+                    Jump();
+                }
+                Walk();
+                AnimateWalkMovement();
+            }
+        }
+        AlignPlayer(false);
+        OxygenCalculation();
+    }
+
     private float HorizontalInputCheck(float horizontalInput)
     {
         var desiredDirection = Mathf.Sign(horizontalInput) * Vector2.Perpendicular(Physics2D.gravity.normalized);
-        var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity, LayerMask.GetMask("Wall"));
+        var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity,
+            LayerMask.GetMask("Wall"));
         var vel = _rg.velocity;
         var stopped = res.distance < maxDistanceToWallUntilBlocked;
         Debug.Log(vel);
@@ -277,17 +293,20 @@ public class PlayerScript : MonoBehaviour
         Debug.Log(vel);
         _rg.velocity = vel;
         _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
-        return (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
+        var resReturn = (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
+
+        if (IsGrounded || resReturn <= Mathf.Epsilon) return resReturn;
+        return (Vector2.Dot(desiredDirection, vel) > vMaxAcceleratableAir) ? 0 : 1;
     }
 
 
-    private Vector2 RescaleToMaxVelocity(Vector2 force)
-    {
-        var perpendicular = Vector2.Perpendicular(Physics2D.gravity.normalized);
-        var currentSpeed = Mathf.Abs(Vector2.Dot(_rg.velocity, perpendicular));
-        var factor = ScaleFactor(currentSpeed, vMaxAcceleratableFloor);
-        return factor * force;
-    }
+    // private Vector2 RescaleToMaxVelocity(Vector2 force)
+    // {
+    //     var perpendicular = Vector2.Perpendicular(Physics2D.gravity.normalized);
+    //     var currentSpeed = Mathf.Abs(Vector2.Dot(_rg.velocity, perpendicular));
+    //     var factor = ScaleFactor(currentSpeed, vMaxAcceleratableFloor);
+    //     return factor * force;
+    // }
 
     //allows easy implementation of more fitting curves
     // private static float ScaleFactor(float current, float targetMax)
