@@ -283,10 +283,10 @@ MonoBehaviour:
   freeFallT: 15
   landMiddleT: 2
   landHardT: 7.5
-  oxygenConsumptionMoving: 0
-  oxygenConsumptionRunning: 0
-  oxygenConsumptionIdle: 0
-  oxygenConsumptionJump: 0
+  oxygenConsumptionMoving: 0.2
+  oxygenConsumptionRunning: 0.75
+  oxygenConsumptionIdle: 0.1
+  oxygenConsumptionJump: 1
   spaceManRotationSpeed: 10
   scoreStatistics: {fileID: 11400000, guid: 2be8c82d1cc3070409f5f0070b25e5c0, type: 2}
 --- !u!61 &2449426816328503155

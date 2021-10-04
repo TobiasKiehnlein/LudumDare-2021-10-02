@@ -81,11 +81,7 @@ public class PlayerScript : MonoBehaviour
             Orientation.Right => Vector2.up,
             _ => Vector2.zero
         };
-        if (_horizontalForce > Mathf.Epsilon)
-        {
-            gameSettings.oxygenCurrent -= oxygenConsumptionMoving * Time.deltaTime;
-            _flagOxygenApplied = true;
-        }
+      
 
         _vel *= _horizontalForce;
         _vel += Physics2D.gravity.normalized *
@@ -277,7 +273,7 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            gameSettings.oxygenCurrent -= oxygenConsumptionIdle;
+            gameSettings.oxygenCurrent -= oxygenConsumptionIdle*Time.deltaTime;
         }
 
         if (gameSettings.oxygenCurrent <= Mathf.Epsilon)
@@ -384,11 +380,11 @@ public class PlayerScript : MonoBehaviour
         if (Abs(horizontalInput) < Mathf.Epsilon) return false;
         if (CheckRunButtonUI() || Input.GetKey(KeyCode.LeftShift))
         {
-            gameSettings.oxygenCurrent -= oxygenConsumptionRunning;
+            gameSettings.oxygenCurrent -= oxygenConsumptionRunning*Time.deltaTime;
         }
         else
         {
-            gameSettings.oxygenCurrent -= oxygenConsumptionMoving;
+            gameSettings.oxygenCurrent -= oxygenConsumptionMoving*Time.deltaTime;
         }
 
         return true;
