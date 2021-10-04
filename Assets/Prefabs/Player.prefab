@@ -266,10 +266,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d4ed94d6689ae41b120c94b9ab610a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 220
-  movingAcceleration: 4
-  runningAcceleration: 7
-  airForceMultiplier: 0.5
+  jumpForce: 330
+  movingAcceleration: 6
+  runningAcceleration: 9
+  airForceMultiplier: 0.6
   maxDistanceToWallUntilBlocked: 0.65
   turnSpeed: 5
   scalingFactorSpeedInputStop: 15
