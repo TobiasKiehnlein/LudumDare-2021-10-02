@@ -144,6 +144,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}
+      propertyPath: m_TagString
+      value: Collidable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 799cb927b5f8acc419de01e406b8ba60, type: 3}
 --- !u!4 &6948112720398823826 stripped

@@ -3175,6 +3175,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2449426816328503155, guid: 2cd00c736686f2741ba8a3c90c4631e3, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8867961161673666371, guid: 2cd00c736686f2741ba8a3c90c4631e3, type: 3}
       propertyPath: jumpForce
       value: 220
@@ -4168,7 +4172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   keyCode: 27
   defaultValue: 0
-  pauseGameWhileVisible: 1
+  pauseGameWhileVisible: 0
 --- !u!114 &1873073727
 MonoBehaviour:
   m_ObjectHideFlags: 0

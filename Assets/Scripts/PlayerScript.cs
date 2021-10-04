@@ -287,7 +287,9 @@ public class PlayerScript : MonoBehaviour
 
     private void Update()
     {
+       
         CleanUpUpdateInput();
+        Debug.Log("" + heightInput + "  " + _horizontalForce + "  " + animatorCanMove + "  " + IsGrounded);
         if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)
         {
             if (!IsGrounded)
@@ -313,20 +315,21 @@ public class PlayerScript : MonoBehaviour
 
     private float HorizontalInputCheck(float horizontalInput)
     {
-        var desiredDirection = Mathf.Sign(horizontalInput) * Vector2.Perpendicular(Physics2D.gravity.normalized);
-        var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity,
-            LayerMask.GetMask("Wall"));
-        var vel = _rg.velocity;
-        var stopped = res.distance < maxDistanceToWallUntilBlocked;
+    //    var desiredDirection = Mathf.Sign(horizontalInput) * Vector2.Perpendicular(Physics2D.gravity.normalized);
+     //   var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity,
+     //       LayerMask.GetMask("Wall"));
+      //  var vel = _rg.velocity;
+     //   var stopped = res.distance < maxDistanceToWallUntilBlocked;
   
-        vel = (stopped) ? Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized, vel) : vel;
+     //   vel = (stopped) ? Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized, vel) : vel;
       
-        _rg.velocity = vel;
-        _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
-        var resReturn = (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
+      //  _rg.velocity = vel;
+     //   _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
+     //   var resReturn = (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
 
-        if (IsGrounded || resReturn <= Mathf.Epsilon) return resReturn;
-        return (Vector2.Dot(desiredDirection, vel) > vMaxAcceleratableAir) ? 0 : 1;
+     //   if (IsGrounded || resReturn <= Mathf.Epsilon) return resReturn;
+      //  return (Vector2.Dot(desiredDirection, vel) > vMaxAcceleratableAir) ? 0 : 1;
+      return 1;
     }
 
 
