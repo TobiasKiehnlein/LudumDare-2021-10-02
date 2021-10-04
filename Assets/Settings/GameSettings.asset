@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravityOrientation: 2
   gravityStrength: 5
-  gravityChangeInterval: 45
+  gravityChangeInterval: 35
   gravityChangeRandomness: 15
   oxygenMax: 100
-  oxygenCurrent: 70
+  oxygenCurrent: 66.41879
   oxygenStart: 70
   oxygenTank: 25
-  musicVolume: 0.7
-  sfxVolume: 0.8
+  musicVolume: 0
+  sfxVolume: 0.87142855

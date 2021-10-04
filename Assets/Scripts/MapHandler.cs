@@ -24,9 +24,14 @@ public class MapHandler : MonoBehaviour
         var maze = new Maze(mapSettings.radius);
         maze.Display();
         var rand = new Random();
+        var l = rand.Next(1) == 1;
         for (var i = 0; i < mapSettings.radius * 2 - 1; i++)
         for (var j = 0; j < mapSettings.radius * 2 - 1; j++)
         {
+            if (l)
+            {
+                (i, j) = (j, i);
+            }
             var distanceToCenter = Vector2.Distance(new Vector2 {x = j, y = i},
                 new Vector2 {x = mapSettings.radius - 1, y = mapSettings.radius - 1});
             if (!(distanceToCenter < mapSettings.radius)) continue;
