@@ -3677,7 +3677,10 @@ MonoBehaviour:
 
 
 
-    Be careful, the gravity seems to be a bit UNSTABLE.'
+    Be careful, the gravity seems to be a bit UNSTABLE.
+
+    (Press
+    SHIFT to sprint)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bc367f4ec3fe3454788ad48f4c62d7fe, type: 2}
   m_sharedMaterial: {fileID: 1247736836103144178, guid: bc367f4ec3fe3454788ad48f4c62d7fe, type: 2}
