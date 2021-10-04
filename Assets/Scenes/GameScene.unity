@@ -1428,6 +1428,7 @@ GameObject:
   - component: {fileID: 606164946}
   - component: {fileID: 606164945}
   - component: {fileID: 606164951}
+  - component: {fileID: 606164952}
   m_Layer: 0
   m_Name: AudioStuff
   m_TagString: Untagged
@@ -2039,6 +2040,36 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &606164952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606164943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89571591094e5ef458496ddf0414b834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxClips:
+  - Name: dirtySiren
+    sfx: 1
+    Clip: {fileID: 8300000, guid: 96ee09be559c9d9489dafb1016fc5e4d, type: 3}
+    shouldLoop: 0
+  - Name: hit
+    sfx: 2
+    Clip: {fileID: 8300000, guid: f3467fa9b6d3434499093b7875baa256, type: 3}
+    shouldLoop: 0
+  - Name: hugeSlap
+    sfx: 3
+    Clip: {fileID: 8300000, guid: 9636ea493de186346936a2c34b7adaed, type: 3}
+    shouldLoop: 0
+  - Name: running
+    sfx: 0
+    Clip: {fileID: 8300000, guid: 7a0b4bc3a0de8bf4d96fd279b03f11e8, type: 3}
+    shouldLoop: 1
+  mixerGroup: {fileID: 5768680047871433473, guid: 65d9e8a208c04c3409b709cf67499920, type: 2}
 --- !u!1 &661872113
 GameObject:
   m_ObjectHideFlags: 0
@@ -3160,9 +3191,6 @@ PrefabInstance:
       propertyPath: maxDistanceToWallUntilBlocked
       value: 0.65
       objectReference: {fileID: 0}
-      propertyPath: scoreStatistics
-      value: 
-      objectReference: {fileID: 11400000, guid: 2be8c82d1cc3070409f5f0070b25e5c0, type: 2}
     - target: {fileID: 8867961161673666372, guid: 2cd00c736686f2741ba8a3c90c4631e3, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -3680,10 +3708,11 @@ MonoBehaviour:
 
 
 
+
     Be careful, the gravity seems to be a bit UNSTABLE.
 
-    (Press
-    SHIFT to sprint)'
+    (Walk
+    with A/D, Jump with SPACE, Sprint with SHIFT)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bc367f4ec3fe3454788ad48f4c62d7fe, type: 2}
   m_sharedMaterial: {fileID: 1247736836103144178, guid: bc367f4ec3fe3454788ad48f4c62d7fe, type: 2}
