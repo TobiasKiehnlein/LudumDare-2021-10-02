@@ -83,11 +83,12 @@ namespace Utils
             {
                 var distanceToCenter = Vector2.Distance(new Vector2 {x = x, y = y},
                     new Vector2 {x = radius - 1, y = radius - 1});
+                // Set round shape
                 _cells[x, y] = distanceToCenter < radius ? CellState.Initial : CellState.Visited;
             }
 
             _rng = new Random();
-            VisitCell(_rng.Next(radius), _rng.Next(radius));
+            VisitCell(radius, radius);
         }
 
         private CellState this[int x, int y]
