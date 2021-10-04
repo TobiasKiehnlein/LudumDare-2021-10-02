@@ -38,7 +38,7 @@ public class PlayerScript : MonoBehaviour
     #endregion
 
     #region Members
-
+    private Vector2 _vel = Vector2.zero;
     private bool IsGrounded => _groundCollisions > 0;
 
     private float _horizontalForce;
@@ -91,7 +91,7 @@ public class PlayerScript : MonoBehaviour
             if (!IsGrounded)
             {
                 _horizontalForce = horizontalInput * airForceMultiplier * movingAcceleration;
-                var horizontalMovementDirection = gameSettings.GravityOrientation switch
+                _vel = gameSettings.GravityOrientation switch
                 {
                     Orientation.Up => Vector2.left,
                     Orientation.Down => Vector2.right,
@@ -105,11 +105,11 @@ public class PlayerScript : MonoBehaviour
                     _flagOxygenApplied = true;
                 }
 
-                horizontalMovementDirection *= _horizontalForce;
+               _vel *= _horizontalForce;
+               _vel += Physics2D.gravity.normalized *
+                   Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
 
-
-                _rg.velocity = horizontalMovementDirection + Physics2D.gravity.normalized *
-                    Vector2.Dot(Physics2D.gravity.normalized, _rg.velocity);
+               _rg.velocity = _vel;
                 //TODO PETER: Updaten! Stimmt das noch?
                 var absVerticalVelocityAligned = Mathf.Abs(GetVerticalVelocityAligned());
                 if (absVerticalVelocityAligned < fallT)
@@ -182,7 +182,7 @@ public class PlayerScript : MonoBehaviour
                     _jumpAllowed = false;
                 }
 
-                var force = gameSettings.GravityOrientation switch
+                _vel = gameSettings.GravityOrientation switch
                 {
                     Orientation.Up => new Vector2(-_horizontalForce, _rg.velocity.y),
                     Orientation.Down => new Vector2(_horizontalForce, _rg.velocity.y),
@@ -190,7 +190,7 @@ public class PlayerScript : MonoBehaviour
                     Orientation.Right => new Vector2(_rg.velocity.x, _horizontalForce),
                     _ => new Vector2(_horizontalForce, _rg.velocity.y)
                 };
-                _rg.velocity = force;
+                _rg.velocity = _vel;
                 var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
                 if (Mathf.Abs(horizontalInput) > 0.1 || absHorizontalVelocityAligned >= walkT)
                 {

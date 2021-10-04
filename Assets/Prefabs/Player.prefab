@@ -267,9 +267,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpForce: 300
-  movingAcceleration: 30
-  runningAcceleration: 70
-  airForceMultiplier: 5
+  movingAcceleration: 3
+  runningAcceleration: 7
+  airForceMultiplier: 0.5
   maxDistanceToWallUntilBlocked: 1
   turnSpeed: 5
   scalingFactorSpeedInputStop: 15
