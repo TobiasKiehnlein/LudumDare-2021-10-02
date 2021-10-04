@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f08db33aca04beaa695a0f319902c31, type: 3}
   m_Name: ScoreStatistics
   m_EditorClassIdentifier: 
+  gameWon: 0
+  scoreGameWon: 100
   timeWalking: 0
   timeWalkingInAir: 0
   countJumping: 0
   timeRunning: 0
-  timeIdleOrFloating: 0
+  timeIdleOrFloating: 55.250366
   numberOfHardCrashes: 0
-  scoreWalkingInAir: 0
-  scoreWalking: 0
-  scoreJumping: 0
-  scoreRunning: 0
-  scoreIdleOrFloating: 0
-  scoreHardCrashes: 0
+  scoreWalkingInAir: 1
+  scoreWalking: 1
+  scoreJumping: 2
+  scoreRunning: 2
+  scoreIdleOrFloating: 1
+  scoreHardCrashes: -1

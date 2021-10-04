@@ -1,5 +1,9 @@
+using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Utils;
+using Random = System.Random;
 
 public class Portal : MonoBehaviour
 {
@@ -10,25 +14,25 @@ public class Portal : MonoBehaviour
 
     private void Start()
     {
-        
-        var str = " forward ";
-        str += this.gameObject.transform.forward.ToString();
-        str += " up ";   str += this.gameObject.transform.up.ToString();
-        str += " right ";   str += this.gameObject.transform.right.ToString();
-      
-        
-        Debug.Log(str);
+        var rand = new Random();
+        var portals = FindObjectsOfType<Portal>();
+        receiver = FindObjectsOfType<Portal>().Shuffle(rand).FirstOrDefault(portal => portal.receiver == null);
+        if (receiver == null)
+        {
+            DestroyImmediate(gameObject.GetComponentInParent<Transform>().gameObject);
+            return;
+        }
+
+        receiver.receiver = this;
     }
 
     private void Update()
     {
-        
-     //   Debug.Log(this.gameObject.transform.forward);
+        //   Debug.Log(this.gameObject.transform.forward);
         _sleeper -= Time.deltaTime;
         if (_sleeper >= 0) return;
         _sleeper = 0;
         _dormant = false;
-        
     }
 
     private void OnTriggerEnter2D(Collider2D other)
