@@ -249,7 +249,7 @@ public class PlayerScript : MonoBehaviour
 
     private void CleanUpUpdateInput()
     {
-        _flagRaycastWallProximityFound = false;
+      
         _flagOxygenApplied = false;
         _jumpLock -= Time.deltaTime;
         if (_jumpLock < 0)
@@ -261,7 +261,7 @@ public class PlayerScript : MonoBehaviour
         animatorCanMove = _animator.CanMove();
         horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
         heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
-        horizontalInput *= HorizontalInputCheck(horizontalInput);
+        
     }
 
     private void PrepareGroundMovement()
@@ -293,12 +293,14 @@ public class PlayerScript : MonoBehaviour
     {
         CleanUpUpdateInput();
         Debug.Log("" + heightInput + "  " + _horizontalForce + "  " + animatorCanMove + "  " + IsGrounded);
-        if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)
-        {
+        
             if (!IsGrounded)
             {
+                if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)
+                {
                 MoveInAir();
                 AnimateAirMovement();
+                }
             }
             else
             {
@@ -311,31 +313,12 @@ public class PlayerScript : MonoBehaviour
                 Walk();
                 AnimateWalkMovement();
             }
-        }
-
+       
         MiscAnimationStuff();
         AlignPlayer(false);
         OxygenCalculation();
     }
 
-    private float HorizontalInputCheck(float horizontalInput)
-    {
-        //    var desiredDirection = Mathf.Sign(horizontalInput) * Vector2.Perpendicular(Physics2D.gravity.normalized);
-        //   var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity,
-        //       LayerMask.GetMask("Wall"));
-        //  var vel = _rg.velocity;
-        //   var stopped = res.distance < maxDistanceToWallUntilBlocked;
-
-        //   vel = (stopped) ? Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized, vel) : vel;
-
-        //  _rg.velocity = vel;
-        //   _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
-        //   var resReturn = (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
-
-        //   if (IsGrounded || resReturn <= Mathf.Epsilon) return resReturn;
-        //  return (Vector2.Dot(desiredDirection, vel) > vMaxAcceleratableAir) ? 0 : 1;
-        return 1;
-    }
 
 
     // private Vector2 RescaleToMaxVelocity(Vector2 force)
