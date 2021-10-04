@@ -16,8 +16,8 @@ namespace ScriptableObjects
         public float oxygenCurrent = 0f;
         public float oxygenStart = 70f;
         public float oxygenTank = 25f;
-        [SerializeField] private float musicVolume = 1;
-        [SerializeField] private float sfxVolume = 1;
+        [SerializeField] private float musicVolume = .6f;
+        [SerializeField] private float sfxVolume = .8f;
 
         public float MusicVolume
         {

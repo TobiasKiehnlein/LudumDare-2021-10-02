@@ -48,3 +48,11 @@ MonoBehaviour:
     CanFaceRight: 1
     CanFaceDown: 1
     CanFaceLeft: 1
+  spaceStation:
+    TileName: SpaceStation
+    Type: 3
+    Prefab: {fileID: 1145611371470166340, guid: ecaa5b3b2deb6e243a20ed6f65511a44, type: 3}
+    CanFaceUp: 1
+    CanFaceRight: 1
+    CanFaceDown: 1
+    CanFaceLeft: 1

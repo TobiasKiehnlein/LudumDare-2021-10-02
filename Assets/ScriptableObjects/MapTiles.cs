@@ -6,5 +6,7 @@ namespace ScriptableObjects
     public class MapTiles : ScriptableObject
     {
         public Tile[] tiles;
+
+        public Tile spaceStation;
     }
 }

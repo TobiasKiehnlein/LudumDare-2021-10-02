@@ -14,13 +14,9 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float movingAcceleration = 5.0f;
     [SerializeField] private float runningAcceleration = 7.0f;
     [SerializeField] private float airForceMultiplier = 5f;
-    [SerializeField] private float maxDistanceToWallUntilBlocked = 1.5f;
     [SerializeField] private float turnSpeed = 5f;
-    [SerializeField] private float scalingFactorSpeedInputStop = .5f;
     [SerializeField] private GameSettings gameSettings;
     [SerializeField] private float vMinTurn;
-    [SerializeField] private float vMaxAcceleratableFloor = 9f;
-    [SerializeField] private float vMaxAcceleratableAir = 5f;
     [SerializeField] private float walkT = 0.2f;
     [SerializeField] private float runT = 3f;
     [SerializeField] private float freeFallT = 20f;
@@ -46,7 +42,6 @@ public class PlayerScript : MonoBehaviour
     private SpaceManAnimator _animator;
     private float _spaceManRotationGoal = 0f;
     private bool _flagOxygenApplied;
-    private bool _flagRaycastWallProximityFound = false;
     private int _groundCollisions = 0;
     private bool animatorCanMove;
     private float horizontalInput;
@@ -284,8 +279,6 @@ public class PlayerScript : MonoBehaviour
     private void Update()
     {
         CleanUpUpdateInput();
-        Debug.Log("" + heightInput + "  " + _horizontalForce + "  " + animatorCanMove + "  " + IsGrounded);
-
         if (!IsGrounded)
         {
             if (Mathf.Abs(horizontalInput) >= Mathf.Epsilon)

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Utils;
 
 namespace ScriptableObjects
@@ -6,13 +7,13 @@ namespace ScriptableObjects
     [CreateAssetMenu(fileName = "ScoreStatistics", menuName = "CustomGameSettings/ScoreStatistics", order = 0)]
     public class ScoreStatistics : ScriptableObject
     {
-        public float Score => timeRunning * scoreRunning +
-                              timeWalking * scoreWalking +
-                              countJumping * scoreJumping +
-                              scoreHardCrashes * .5f * numberOfHardCrashes +
-                              timeIdleOrFloating * scoreIdleOrFloating +
-                              timeWalkingInAir * scoreWalkingInAir +
-                              gameWon.ToInt() * scoreGameWon;
+        public float Score => Mathf.Round(timeRunning * scoreRunning) +
+                              Mathf.Round(timeWalking * scoreWalking) +
+                              Mathf.Round(countJumping * scoreJumping) +
+                              Mathf.Round(scoreHardCrashes * .5f * numberOfHardCrashes) +
+                              Mathf.Round(timeIdleOrFloating * scoreIdleOrFloating) +
+                              Mathf.Round(timeWalkingInAir * scoreWalkingInAir) +
+                              Mathf.Round(gameWon.ToInt() * scoreGameWon);
 
         public bool gameWon;
         public float scoreGameWon;

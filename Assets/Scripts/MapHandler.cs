@@ -14,6 +14,7 @@ public class MapHandler : MonoBehaviour
     private string[,] _map;
     private Rot[,] _rotations;
     private Dictionary<string, Tile> _tiles;
+    private bool alreadyGeneratedSpaceStation;
 
     private void Start()
     {
@@ -34,6 +35,12 @@ public class MapHandler : MonoBehaviour
                 _map[i, j] = _tiles.Keys.ToArray()[rand.Next(0, _tiles.Count)];
                 var (tileType, rotation) = maze.GetTileInfo(i, j);
                 var tile = mapTiles.tiles.Where(x => x.Type == tileType).Shuffle(rand).First();
+
+                if (tileType == TileType.DeadEnd && !alreadyGeneratedSpaceStation)
+                {
+                    alreadyGeneratedSpaceStation = true;
+                    tile = mapTiles.spaceStation;
+                }
 
                 var go = Instantiate(tile.Prefab, transform);
                 go.transform.localPosition = new Vector3 {x = i * mapSettings.tileSize, y = j * mapSettings.tileSize};
