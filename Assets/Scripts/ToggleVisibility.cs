@@ -17,7 +17,12 @@ public class ToggleVisibility : MonoBehaviour
     {
         if (Input.GetKeyDown(keyCode))
         {
-            _canvas.enabled = !_canvas.enabled;
+            Toggle();
         }
+    }
+
+    public void Toggle()
+    {
+        _canvas.enabled = !_canvas.enabled;
     }
 }

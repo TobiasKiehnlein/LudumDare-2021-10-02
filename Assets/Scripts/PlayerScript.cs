@@ -13,7 +13,9 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float airForceMultiplier = 5f;
     [SerializeField] private float maxDistanceToWallUntilBlocked = 1.5f;
     [SerializeField] private float turnSpeed = 5f;
-    [SerializeField] private float scalingFactorSpeedInputStop =.5f;
+
+    [SerializeField] private float scalingFactorSpeedInputStop = .5f;
+
     //disabled to create consistent Naming
     //  [SerializeField] private float maxAirBoostSpeed = 5f;
     [SerializeField] private GameSettings gameSettings;
@@ -42,8 +44,9 @@ public class PlayerScript : MonoBehaviour
 
     private bool _jumpAllowed;
     private float _jumpLock;
+
     private Rigidbody2D _rg;
-   // private Vector2 _vel = new Vector2(0, 0);
+    // private Vector2 _vel = new Vector2(0, 0);
 
     private SpaceManAnimator _animator;
     [SerializeField] private float spaceManRotationSpeed = 10f;
@@ -76,10 +79,10 @@ public class PlayerScript : MonoBehaviour
 
         var animatorCanMove = _animator.CanMove();
         var horizontalInput = animatorCanMove ? Input.GetAxis("Horizontal") : 0;
-        var heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0; 
-       horizontalInput *= RayCheck(horizontalInput);
-       // Debug.Log(Vector2.Perpendicular(Physics2D.gravity));
-     //   Debug.Log(horizontalInput);
+        var heightInput = animatorCanMove ? (int) Input.GetAxis("Jump") : 0;
+        horizontalInput *= RayCheck(horizontalInput);
+        // Debug.Log(Vector2.Perpendicular(Physics2D.gravity));
+        //   Debug.Log(horizontalInput);
         if (!IsGrounded)
         {
             _horizontalForce = horizontalInput * airForceMultiplier * movingAcceleration;
@@ -120,14 +123,17 @@ public class PlayerScript : MonoBehaviour
             if (absVerticalVelocityAligned < fallT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Float);
+                AudioManager.Instance.StartSound(Music.MediumDrums,2f);
             }
             else if (absVerticalVelocityAligned < freeFallT)
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Fall);
+                AudioManager.Instance.StartSound(Music.MediumDrums,2f);
             }
             else
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.FreeFall);
+                AudioManager.Instance.StartSound(Music.IntenseDrums,2f);
             }
         }
         else
@@ -180,19 +186,21 @@ public class PlayerScript : MonoBehaviour
             var absHorizontalVelocityAligned = Mathf.Abs(GetHorizontalVelocityAligned());
             if (Mathf.Abs(horizontalInput) > 0.1 || absHorizontalVelocityAligned >= walkT)
             {
-               
                 if (absHorizontalVelocityAligned < runT)
                 {
                     _animator.Animate(SpaceManAnimator.AnimationState.Walk);
+                    AudioManager.Instance.StartSound(Music.SilentDrums,2f);
                 }
                 else
                 {
                     _animator.Animate(SpaceManAnimator.AnimationState.Run);
+                    AudioManager.Instance.StartSound(Music.MediumDrums,2f);
                 }
             }
             else
             {
                 _animator.Animate(SpaceManAnimator.AnimationState.Stand);
+                AudioManager.Instance.StartSound(Music.Silent,2f);
             }
         }
 
@@ -251,22 +259,17 @@ public class PlayerScript : MonoBehaviour
 
     private float RayCheck(float horizontalInput)
     {
-        
-        
-        var desiredDirection = Mathf.Sign(horizontalInput)*Vector2.Perpendicular(Physics2D.gravity.normalized);
+        var desiredDirection = Mathf.Sign(horizontalInput) * Vector2.Perpendicular(Physics2D.gravity.normalized);
         var res = Physics2D.Raycast((Vector2) transform.position, desiredDirection, Mathf.Infinity, LayerMask.GetMask("Wall"));
         var vel = _rg.velocity;
         var stopped = res.distance < maxDistanceToWallUntilBlocked;
         Debug.Log(vel);
-        vel = ( stopped  ) ?   Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized , vel)  : vel;
+        vel = (stopped) ? Physics2D.gravity.normalized * Vector2.Dot(Physics2D.gravity.normalized, vel) : vel;
         Debug.Log(vel);
         _rg.velocity = vel;
         _flagRaycastWallProximityFound = res.distance < maxDistanceToWallUntilBlocked;
         return (res.distance < maxDistanceToWallUntilBlocked) ? 0 : 1;
-
     }
-
-   
 
 
     private Vector2 RescaleToMaxVelocity(Vector2 force)
