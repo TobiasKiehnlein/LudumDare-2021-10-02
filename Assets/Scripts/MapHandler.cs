@@ -21,6 +21,7 @@ public class MapHandler : MonoBehaviour
         _map = new string[mapSettings.radius * 2 - 1, mapSettings.radius * 2 - 1];
         _rotations = new Rot[mapSettings.radius * 2 - 1, mapSettings.radius * 2 - 1];
         var maze = new Maze(mapSettings.radius);
+        maze.Display();
         var rand = new Random();
         for (var i = 0; i < mapSettings.radius * 2 - 1; i++)
         for (var j = 0; j < mapSettings.radius * 2 - 1; j++)

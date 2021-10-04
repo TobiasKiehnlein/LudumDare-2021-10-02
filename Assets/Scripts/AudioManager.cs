@@ -87,7 +87,7 @@ public class AudioManager : MonoBehaviour
         if (Math.Abs(gameSettings.SfxVolume - _localSfxVolume) > tolerance)
         {
             mixer.SetFloat("SfxVol", gameSettings.SfxVolume * 80 - 80);
-            _localSfxVolume = gameSettings.SfxVolume;
+            _localSfxVolume = gameSettings.SfxVolume ;
         }
     }
 }

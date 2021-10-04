@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
-        if (_spaceManAnimator.GetCurrentState() != SpaceManAnimator.AnimatorState.FreeFalling) //Todo replace with something like "isFreeFall"
+        if (_spaceManAnimator.GetCurrentState() != SpaceManAnimator.AnimatorState.FreeFalling && false) //Todo replace with something like "isFreeFall"
         {
             var moveInterval = _mapSettings.tileSize / 2;
             var dest = new Vector3 {x = (float) Math.Round(player.position.x / moveInterval) * moveInterval, y = (float) Math.Round(player.position.y / (moveInterval / 2)) * (moveInterval / 2), z = transform.position.z};
