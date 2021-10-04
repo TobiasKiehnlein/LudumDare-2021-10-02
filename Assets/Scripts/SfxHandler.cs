@@ -44,7 +44,10 @@ public class SfxHandler : MonoBehaviour
 
     public void TriggerSfx(Sfx sfx)
     {
-        sfxClips.FirstOrDefault(x => x.sfx == sfx)?.AudioSource.Play();
+        var audioSrc = sfxClips.FirstOrDefault(x => x.sfx == sfx)?.AudioSource;
+        if (!audioSrc) return;
+        audioSrc.Play();
+        audioSrc.time = 0;
     }
 
     public void StopSfx(Sfx sfx)
