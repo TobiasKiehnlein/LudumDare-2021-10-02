@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
         _random = new Random();
         gameSettings.oxygenCurrent = gameSettings.oxygenStart;
         AudioManager.Instance.StartSound(Music.Silent);
+        AudioManager.Instance.StartSound(Sfx.TutorialText);
     }
 
     // Update is called once per frame

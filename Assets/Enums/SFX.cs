@@ -5,7 +5,8 @@
         FootSteps,
         DirtySiren,
         Hit,
-        HugeSlap
+        HugeSlap,
+        TutorialText
     }
 
     public enum Music

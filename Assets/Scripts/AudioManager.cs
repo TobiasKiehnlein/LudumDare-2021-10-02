@@ -62,7 +62,7 @@ public class AudioManager : MonoBehaviour
         }
         catch (Exception)
         {
-            Debug.LogWarning($"The audio No. ${sfx} couldn't be played");
+            Debug.LogWarning($"The audio {sfx} couldn't be played");
         }
     }
 
