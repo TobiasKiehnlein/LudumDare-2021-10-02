@@ -266,11 +266,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d4ed94d6689ae41b120c94b9ab610a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 300
-  movingAcceleration: 3
+  jumpForce: 220
+  movingAcceleration: 4
   runningAcceleration: 7
   airForceMultiplier: 0.5
-  maxDistanceToWallUntilBlocked: 1
+  maxDistanceToWallUntilBlocked: 0.65
   turnSpeed: 5
   scalingFactorSpeedInputStop: 15
   gameSettings: {fileID: 11400000, guid: e596dddb9563617498018f921e414040, type: 2}
